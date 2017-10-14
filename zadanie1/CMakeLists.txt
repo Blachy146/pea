@@ -17,7 +17,7 @@ set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 set(SOURCES
-        ${SOURCE_DIR}/salesman.cpp
+        ${SOURCE_DIR}/TravellingSalesmanBruteForce.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -25,14 +25,15 @@ set(EXEC_ONLY_SRCS
 )
 
 set(INCLUDES
-        ${INCLUDE_DIR}/salesman.h
+        ${INCLUDE_DIR}/TravellingSalesmanBruteForce.h
 )
 
 set(INTERFACES
+        ${INTERFACE_DIR}/TravellingSalesman.h
 )
 
 set(TESTS
-        ${TEST_DIR}/simpleTest.cpp
+        ${TEST_DIR}/TravellingSalesmanBruteForceTestSuite.cpp
 )
 
 set(TARGET_LIBRARY_NAME ${PROJECT_NAME}-lib)
