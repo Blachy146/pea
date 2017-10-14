@@ -1,6 +1,6 @@
-#include <iostream>
+#include <salesman.h>
 
 int main()
 {
-    std::cout << "Hello!";
+    TravellingSalesman salesman;
 }

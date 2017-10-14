@@ -10,11 +10,15 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 
 set(SOURCES
-        ${SOURCE_DIR}/main.cpp
+        ${SOURCE_DIR}/salesman.cpp
 )
 
-set(INCLUDES
+set(EXEC_ONLY_SRCS
+        ${SOURCE_DIR}/main.cpp
         )
+
+set(INCLUDES
+        ${INCLUDE_DIR}/salesman.h)
 
 set(INTERFACES
         )
@@ -25,5 +29,5 @@ add_library(${TARGET_LIBRARY_NAME} ${SOURCES} ${INCLUDES} ${INTERFACES})
 target_include_directories(${TARGET_LIBRARY_NAME} PUBLIC ${INCLUDE_DIR} ${INTERFACE_DIR})
 target_link_libraries(${TARGET_LIBRARY_NAME} PUBLIC ${BOOST_LIBRARIES})
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(${PROJECT_NAME} ${EXEC_ONLY_SRCS})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${TARGET_LIBRARY_NAME})
