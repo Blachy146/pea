@@ -57,12 +57,12 @@ std::pair<std::vector<int>, double> TravellingSalesmanBruteForce::getPath() cons
     std::vector<int> cities = createVectorOfCities(distances.size());
 
     auto bestPermutation = fillCitiesWithReturnCity(cities);
-    auto bestDistance = getDistanceOfPermutation(cities);
+    auto bestDistance = getDistanceOfPermutation(bestPermutation);
 
     do
     {
         auto currentPermutation = fillCitiesWithReturnCity(cities);
-        auto currentDistance = getDistanceOfPermutation(cities);
+        auto currentDistance = getDistanceOfPermutation(currentPermutation);
 
         if(currentDistance < bestDistance)
         {

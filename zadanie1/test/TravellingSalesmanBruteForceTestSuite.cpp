@@ -43,11 +43,13 @@ TEST_F(TravellingSalesmanBruteForceTestSuite, constructorShouldLoadDistancesFrom
     EXPECT_EQ(distancesMatrix, salesman.getCitiesMatrix());
 }
 
-TEST_F(TravellingSalesmanBruteForceTestSuite, getPathShouldReturnShortestPath)
-{
+TEST_F(TravellingSalesmanBruteForceTestSuite, getPathShouldReturnShortestPath) {
     TravellingSalesmanBruteForce salesman(distancesPath);
-    std::vector<int> expectedPath {2, 0, 3, 4, 1, 2};
+
+    std::vector<int> expectedPath{2, 0, 3, 4, 1, 2};
     double expectedDistance = 19;
 
-    EXPECT_EQ(expectedDistance, salesman.getPath().second);
+    auto result = salesman.getPath();
+
+    EXPECT_EQ(expectedDistance, result.second);
 }
