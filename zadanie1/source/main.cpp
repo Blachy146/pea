@@ -1,6 +1,10 @@
 #include <salesman.h>
 
+#include <iostream>
+
 int main()
 {
-    TravellingSalesman salesman;
+    TravellingSalesman salesman{"/some/file"};
+
+    std::cout << "salesman.getPath() = " << salesman.getPath() << "\n";
 }
