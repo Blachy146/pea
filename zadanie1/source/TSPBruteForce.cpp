@@ -1,4 +1,4 @@
-#include <TravellingSalesmanBruteForce.h>
+#include <TSPBruteForce.h>
 
 #include <iostream>
 #include <fstream>
@@ -6,14 +6,18 @@
 #include <algorithm>
 
 
-TravellingSalesmanBruteForce::TravellingSalesmanBruteForce(const std::string& dataFilePath)
+TSPBruteForce::TSPBruteForce(const std::string& dataFilePath)
 {
     std::ifstream ifs(dataFilePath);
 
-    for(std::string line; std::getline(ifs, line);)
+    while(!ifs.eof())
     {
-        std::vector<double> oneCityDistances;
+        std::string line = "";
+
+        std::getline(ifs, line);
+
         std::stringstream lineStream(line);
+        std::vector<double> oneCityDistances;
 
         while(!lineStream.eof())
         {
@@ -52,7 +56,7 @@ std::vector<int> fillCitiesWithReturnCity(const std::vector<int>& cities)
 
 }
 
-std::pair<std::vector<int>, double> TravellingSalesmanBruteForce::getPath() const
+std::pair<std::vector<int>, double> TSPBruteForce::getPath() const
 {
     std::vector<int> cities = createVectorOfCities(distances.size());
 
@@ -75,7 +79,7 @@ std::pair<std::vector<int>, double> TravellingSalesmanBruteForce::getPath() cons
     return std::make_pair(bestPermutation, bestDistance);
 }
 
-double TravellingSalesmanBruteForce::getDistanceOfPermutation(const std::vector<int> &cities) const
+double TSPBruteForce::getDistanceOfPermutation(const std::vector<int> &cities) const
 {
     auto distance = 0.0;
 
@@ -89,7 +93,7 @@ double TravellingSalesmanBruteForce::getDistanceOfPermutation(const std::vector<
     return distance;
 }
 
-const std::vector<std::vector<double>>& TravellingSalesmanBruteForce::getCitiesMatrix() const
+const std::vector<std::vector<double>>& TSPBruteForce::getCitiesMatrix() const
 {
     return distances;
 }

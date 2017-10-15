@@ -17,7 +17,8 @@ set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 set(SOURCES
-        ${SOURCE_DIR}/TravellingSalesmanBruteForce.cpp
+        ${SOURCE_DIR}/TSPBruteForce.cpp
+        ${SOURCE_DIR}/TSPDynamicProgramming.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -25,15 +26,17 @@ set(EXEC_ONLY_SRCS
 )
 
 set(INCLUDES
-        ${INCLUDE_DIR}/TravellingSalesmanBruteForce.h
+        ${INCLUDE_DIR}/TSPBruteForce.h
+        ${INCLUDE_DIR}/TSPDynamicProgramming.h
 )
 
 set(INTERFACES
-        ${INTERFACE_DIR}/TravellingSalesman.h
+        ${INTERFACE_DIR}/TSP.h
 )
 
 set(TESTS
-        ${TEST_DIR}/TravellingSalesmanBruteForceTestSuite.cpp
+        ${TEST_DIR}/TSPBruteForceTestSuite.cpp
+        ${TEST_DIR}/TSPDynamicProgrammingTestSuite.cpp
 )
 
 set(TARGET_LIBRARY_NAME ${PROJECT_NAME}-lib)

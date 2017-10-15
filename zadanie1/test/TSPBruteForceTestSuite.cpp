@@ -1,14 +1,14 @@
-#include <TravellingSalesmanBruteForce.h>
+#include <TSPBruteForce.h>
 
 #include <gtest/gtest.h>
 #include <fstream>
 
 using namespace ::testing;
 
-class TravellingSalesmanBruteForceTestSuite : public Test
+class TSPBruteForceTestSuite : public Test
 {
 public:
-    TravellingSalesmanBruteForceTestSuite()
+    TSPBruteForceTestSuite()
     {
         std::ofstream ofs(distancesPath);
 
@@ -36,15 +36,15 @@ public:
     std::vector<std::vector<double>> distancesMatrix;
 };
 
-TEST_F(TravellingSalesmanBruteForceTestSuite, constructorShouldLoadDistancesFromFile)
+TEST_F(TSPBruteForceTestSuite, constructorShouldLoadDistancesFromFile)
 {
-    TravellingSalesmanBruteForce salesman(distancesPath);
+    TSPBruteForce salesman(distancesPath);
 
     EXPECT_EQ(distancesMatrix, salesman.getCitiesMatrix());
 }
 
-TEST_F(TravellingSalesmanBruteForceTestSuite, getPathShouldReturnShortestPath) {
-    TravellingSalesmanBruteForce salesman(distancesPath);
+TEST_F(TSPBruteForceTestSuite, getPathShouldReturnShortestPath) {
+    TSPBruteForce salesman(distancesPath);
 
     std::vector<int> expectedPath{2, 0, 3, 4, 1, 2};
     double expectedDistance = 19;
