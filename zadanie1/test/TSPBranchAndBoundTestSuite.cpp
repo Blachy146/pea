@@ -1,14 +1,14 @@
-#include <TSPDynamicProgramming.h>
+#include <TSPBranchAndBound.h>
 
 #include <gtest/gtest.h>
 #include <fstream>
 
 using namespace ::testing;
 
-class TSPDynamicProgrammingTestSuite : public Test
+class TSPBranchAndBoundTestSuite : public Test
 {
 public:
-    TSPDynamicProgrammingTestSuite()
+    TSPBranchAndBoundTestSuite()
     {
         std::ofstream ofs(distancesPath);
 
@@ -36,9 +36,9 @@ public:
     std::vector<std::vector<double>> distancesMatrix;
 };
 
-TEST_F(TSPDynamicProgrammingTestSuite, constructorShouldLoadDistancesFromFile)
+TEST_F(TSPBranchAndBoundTestSuite, constructorShouldLoadDistancesFromFile)
 {
-    TSPDynamicProgramming salesman(distancesPath);
+    TSPBranchAndBound salesman(distancesPath);
 
     EXPECT_EQ(distancesMatrix, salesman.getCitiesMatrix());
 }

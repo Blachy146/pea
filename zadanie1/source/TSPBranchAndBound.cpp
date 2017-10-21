@@ -1,9 +1,9 @@
-#include <TSPDynamicProgramming.h>
+#include <TSPBranchAndBound.h>
 
 #include <fstream>
 #include <sstream>
 
-TSPDynamicProgramming::TSPDynamicProgramming(const std::string &dataFilePath)
+TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 {
     std::ifstream ifs(dataFilePath);
 
@@ -28,12 +28,12 @@ TSPDynamicProgramming::TSPDynamicProgramming(const std::string &dataFilePath)
     }
 }
 
-std::pair<std::vector<int>, double> TSPDynamicProgramming::getPath() const
+std::pair<std::vector<int>, double> TSPBranchAndBound::getPath() const
 {
     return std::make_pair(std::vector<int>(), double());
 }
 
-const std::vector<std::vector<double>>& TSPDynamicProgramming::getCitiesMatrix() const
+const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const
 {
     return distances;
 }

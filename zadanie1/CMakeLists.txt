@@ -18,7 +18,7 @@ set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 
 set(SOURCES
         ${SOURCE_DIR}/TSPBruteForce.cpp
-        ${SOURCE_DIR}/TSPDynamicProgramming.cpp
+        ${SOURCE_DIR}/TSPBranchAndBound.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -27,7 +27,7 @@ set(EXEC_ONLY_SRCS
 
 set(INCLUDES
         ${INCLUDE_DIR}/TSPBruteForce.h
-        ${INCLUDE_DIR}/TSPDynamicProgramming.h
+        ${INCLUDE_DIR}/TSPBranchAndBound.h
 )
 
 set(INTERFACES
@@ -36,7 +36,7 @@ set(INTERFACES
 
 set(TESTS
         ${TEST_DIR}/TSPBruteForceTestSuite.cpp
-        ${TEST_DIR}/TSPDynamicProgrammingTestSuite.cpp
+        ${TEST_DIR}/TSPBranchAndBoundTestSuite.cpp
 )
 
 set(TARGET_LIBRARY_NAME ${PROJECT_NAME}-lib)

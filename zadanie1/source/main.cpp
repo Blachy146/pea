@@ -1,5 +1,5 @@
 #include <TSPBruteForce.h>
-#include <TSPDynamicProgramming.h>
+#include <TSPBranchAndBound.h>
 
 int main()
 {
