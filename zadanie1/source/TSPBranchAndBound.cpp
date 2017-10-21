@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 {
@@ -38,7 +39,36 @@ const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() con
     return distances;
 }
 
-int TSPBranchAndBound::calculateFirstUpperBound() const
+int TSPBranchAndBound::calculateRootLowerBound() const
 {
-    return 0;
+    int lowerBound = 0;
+
+    for(auto oneCityDistances : distances)
+    {
+        lowerBound += *std::min_element(oneCityDistances.begin(), oneCityDistances.end(), [](auto lhs, auto rhs)
+                                                                                        {
+                                                                                            if(lhs == 0)
+                                                                                                return false;
+                                                                                            else if(rhs == 0)
+                                                                                                return true;
+                                                                                            else
+                                                                                                return lhs < rhs;
+                                                                                        });
+    }
+
+    return lowerBound;
+}
+
+int TSPBranchAndBound::calculateUpperBound() const
+{
+    int upperBound = 0;
+
+    for(auto distance : distances[0])
+    {
+        upperBound += distance;
+    }
+
+    upperBound += distances[distances.size() - 1][0];
+
+    return upperBound;
 }

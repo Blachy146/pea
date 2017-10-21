@@ -13,7 +13,8 @@ public:
     std::pair<std::vector<int>, double> getPath() override;
     const std::vector<std::vector<double>>& getCitiesMatrix() const;
 private:
-    int calculateFirstUpperBound() const;
+    int calculateUpperBound() const;
+    int calculateRootLowerBound() const;
 
     std::vector<std::vector<double>> distances;
 };

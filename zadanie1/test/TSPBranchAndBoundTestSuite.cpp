@@ -42,3 +42,4 @@ TEST_F(TSPBranchAndBoundTestSuite, constructorShouldLoadDistancesFromFile)
 
     EXPECT_EQ(distancesMatrix, salesman.getCitiesMatrix());
 }
+
