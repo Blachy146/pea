@@ -1,0 +1,7 @@
+languague: c++
+
+script:
+- mkdir -p check
+- cd check
+- cmake ../.
+- make check

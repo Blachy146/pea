@@ -56,7 +56,7 @@ std::vector<int> fillCitiesWithReturnCity(const std::vector<int>& cities)
 
 }
 
-std::pair<std::vector<int>, double> TSPBruteForce::getPath() const
+std::pair<std::vector<int>, double> TSPBruteForce::getPath()
 {
     std::vector<int> cities = createVectorOfCities(distances.size());
 

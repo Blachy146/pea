@@ -28,7 +28,7 @@ TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
     }
 }
 
-std::pair<std::vector<int>, double> TSPBranchAndBound::getPath() const
+std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
 {
     return std::make_pair(std::vector<int>(), double());
 }
@@ -36,4 +36,9 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath() const
 const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const
 {
     return distances;
+}
+
+int TSPBranchAndBound::calculateFirstUpperBound() const
+{
+    return 0;
 }

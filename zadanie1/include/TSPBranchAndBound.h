@@ -10,8 +10,10 @@ class TSPBranchAndBound : public TSP
 public:
     explicit TSPBranchAndBound(const std::string& dataFilePath);
 
-    std::pair<std::vector<int>, double> getPath() const override;
+    std::pair<std::vector<int>, double> getPath() override;
     const std::vector<std::vector<double>>& getCitiesMatrix() const;
 private:
+    int calculateFirstUpperBound() const;
+
     std::vector<std::vector<double>> distances;
 };
