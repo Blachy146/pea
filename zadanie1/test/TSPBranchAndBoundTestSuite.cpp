@@ -43,7 +43,8 @@ TEST_F(TSPBranchAndBoundTestSuite, constructorShouldLoadDistancesFromFile)
     EXPECT_EQ(distancesMatrix, salesman.getCitiesMatrix());
 }
 
-TEST_F(TSPBranchAndBoundTestSuite, getPathShouldReturnShortestPath) {
+TEST_F(TSPBranchAndBoundTestSuite, getPathShouldReturnShortestPath)
+{
     TSPBranchAndBound salesman(distancesPath);
 
     std::vector<int> expectedPath{2, 0, 3, 4, 1, 2};
@@ -52,5 +53,6 @@ TEST_F(TSPBranchAndBoundTestSuite, getPathShouldReturnShortestPath) {
     auto result = salesman.getPath();
 
     EXPECT_EQ(expectedDistance, result.second);
+    EXPECT_EQ(expectedPath, result.first);
 }
 
