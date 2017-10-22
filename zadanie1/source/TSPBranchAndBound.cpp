@@ -83,8 +83,6 @@ int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCitie
         lowerBound += usedDistance;
     }
 
-    std::cerr << "LOWERBOUND1 = " << lowerBound << "\n";
-
     auto lastCity = usedCities.back();
     std::vector<int> citiesTo;
 
@@ -105,8 +103,6 @@ int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCitie
 
     lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
 
-    std::cerr << "LOWERBOUND2 = " << lowerBound << "\n";
-
     std::vector<int> citiesFrom = citiesTo;
     citiesTo.push_back(*usedCities.begin());
 
@@ -123,10 +119,7 @@ int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCitie
         }
 
         lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
-        std::cerr << "LOWERBOUND = " << lowerBound << "\n";
     }
-
-    std::cerr << "LOWERBOUND3 = " << lowerBound << "\n";
 
     return lowerBound;
 }
