@@ -15,6 +15,7 @@ public:
 private:
     int calculateUpperBound() const;
     int calculateRootLowerBound() const;
+    int calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const;
 
     std::vector<std::vector<double>> distances;
 };

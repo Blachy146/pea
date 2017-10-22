@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <iostream>
 
 TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 {
@@ -72,3 +73,61 @@ int TSPBranchAndBound::calculateUpperBound() const
 
     return upperBound;
 }
+
+int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
+{
+    int lowerBound = 0;
+
+    for(auto usedDistance : usedDistances)
+    {
+        lowerBound += usedDistance;
+    }
+
+    std::cerr << "LOWERBOUND1 = " << lowerBound << "\n";
+
+    auto lastCity = usedCities.back();
+    std::vector<int> citiesTo;
+
+    for(auto i = 0; i < distances.size(); ++i)
+    {
+        if(std::find(usedCities.begin(), usedCities.end(), i) == usedCities.end())
+        {
+            citiesTo.push_back(i);
+        }
+    }
+
+    std::vector<double> availableDistances;
+
+    for(auto city : citiesTo)
+    {
+        availableDistances.push_back(distances[lastCity][city]);
+    }
+
+    lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
+
+    std::cerr << "LOWERBOUND2 = " << lowerBound << "\n";
+
+    std::vector<int> citiesFrom = citiesTo;
+    citiesTo.push_back(*usedCities.begin());
+
+    for(auto cityFrom : citiesFrom)
+    {
+        availableDistances.clear();
+
+        for(auto cityTo : citiesTo)
+        {
+            if(cityFrom != cityTo)
+            {
+                availableDistances.push_back(distances[cityFrom][cityTo]);
+            }
+        }
+
+        lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
+        std::cerr << "LOWERBOUND = " << lowerBound << "\n";
+    }
+
+    std::cerr << "LOWERBOUND3 = " << lowerBound << "\n";
+
+    return lowerBound;
+}
+
