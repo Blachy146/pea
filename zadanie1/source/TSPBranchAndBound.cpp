@@ -28,11 +28,54 @@ TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 
         distances.push_back(oneCityDistances);
     }
+
+    upperBound = calculateUpperBound();
 }
 
 std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
 {
-    return std::make_pair(std::vector<int>(), double());
+    bool endOfCalculatingPath = false;
+    int startCity = 0;
+
+    Node rootNode;
+
+    rootNode.currentPath.push_back(startCity);
+    rootNode.lowerBound = calculateRootLowerBound();
+
+    latestNodes.push_back(rootNode);
+
+    while(!endOfCalculatingPath)
+    {
+        std::vector<std::vector<Node>> currentBranches;
+
+        for(auto node : latestNodes)
+        {
+            std::vector<int> availableCities;
+
+            for(auto i = 0; i < distances.size(); ++i)
+            {
+                if(std::find(node.currentPath.begin(), node.currentPath.end(), i) == node.currentPath.end())
+                {
+                    availableCities.push_back(i);
+                }
+            }
+
+            std::vector<Node> currentNodes;
+
+            for(auto nextCity : availableCities)
+            {
+                Node newNode;
+
+                newNode.currentPath = node.currentPath;
+                newNode.currentPath.push_back(nextCity);
+                newNode.currentPathDistances = node.currentPathDistances;
+                newNode.currentPathDistances.push_back(distances[node.currentPath.back()][nextCity]);
+                newNode.lowerBound = calculateNodeLowerBound(newNode.currentPath, newNode.currentPathDistances);
+            }
+        }
+
+    }
+
 }
 
 const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const

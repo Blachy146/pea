@@ -2,9 +2,10 @@
 
 #include <vector>
 
-class CityInPath
+class Node
 {
 public:
     std::vector<int> currentPath;
-    int currentPathWeight;
+    std::vector<double> currentPathDistances;
+    double lowerBound;
 };

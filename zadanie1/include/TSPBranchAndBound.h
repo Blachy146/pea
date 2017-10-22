@@ -4,6 +4,7 @@
 
 #include <string>
 #include <vector>
+#include <Node.h>
 
 class TSPBranchAndBound : public TSP
 {
@@ -18,4 +19,6 @@ private:
     int calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const;
 
     std::vector<std::vector<double>> distances;
+    std::vector<Node> latestNodes;
+    double upperBound;
 };
