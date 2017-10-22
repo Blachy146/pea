@@ -8,4 +8,5 @@ public:
     std::vector<int> currentPath;
     std::vector<double> currentPathDistances;
     double lowerBound;
+    double currentDistance;
 };
