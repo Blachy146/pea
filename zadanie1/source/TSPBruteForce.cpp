@@ -9,17 +9,20 @@
 TSPBruteForce::TSPBruteForce(const std::string& dataFilePath)
 {
     std::ifstream ifs(dataFilePath);
+    auto numberOfCities = 0;
+    std::string line = "";
 
-    while(!ifs.eof())
+    ifs >> numberOfCities;
+    std::getline(ifs, line);
+
+    for(auto i = 0; i < numberOfCities; ++i)
     {
-        std::string line = "";
-
         std::getline(ifs, line);
 
         std::stringstream lineStream(line);
         std::vector<double> oneCityDistances;
 
-        while(!lineStream.eof())
+        for(auto j = 0; j < numberOfCities; ++j)
         {
             double distance;
 

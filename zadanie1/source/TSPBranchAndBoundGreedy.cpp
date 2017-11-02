@@ -1,12 +1,11 @@
-#include <TSPBranchAndBound.h>
+#include <TSPBranchAndBoundGreedy.h>
 
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <iostream>
 
-TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
-{
+TSPBranchAndBoundGreedy::TSPBranchAndBoundGreedy(const std::string &dataFilePath){
     std::ifstream ifs(dataFilePath);
     auto numberOfCities = 0;
     std::string line = "";
@@ -31,11 +30,9 @@ TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 
         distances.push_back(oneCityDistances);
     }
-
-    upperBound = calculateUpperBound();
 }
 
-std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
+std::pair<std::vector<int>, double> TSPBranchAndBoundGreedy::getPath()
 {
     bool endOfCalculatingPath = false;
     int startCity = 0;
@@ -72,6 +69,15 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
 
             std::vector<Node> branchNodes;
 
+            Node lowestLowerBoundNode;
+
+            lowestLowerBoundNode.currentPathDistances = node.currentPathDistances;
+            lowestLowerBoundNode.currentPathDistances.push_back(distances[node.currentPath.back()][availableCities[0]]);
+            lowestLowerBoundNode.currentPath = node.currentPath;
+            lowestLowerBoundNode.currentPath.push_back(availableCities[0]);
+            lowestLowerBoundNode.lowerBound = calculateNodeLowerBound(lowestLowerBoundNode.currentPath, lowestLowerBoundNode.currentPathDistances);
+            lowestLowerBoundNode.currentDistance = node.currentDistance + lowestLowerBoundNode.currentPathDistances.back();
+
             for(auto nextCity : availableCities)
             {
                 Node newNode;
@@ -83,12 +89,13 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
                 newNode.lowerBound = calculateNodeLowerBound(newNode.currentPath, newNode.currentPathDistances);
                 newNode.currentDistance = node.currentDistance + newNode.currentPathDistances.back();
 
-                if(newNode.lowerBound <= upperBound)
+                if(newNode.lowerBound < lowestLowerBoundNode.lowerBound)
                 {
-                    branchNodes.push_back(newNode);
+                    lowestLowerBoundNode = newNode;
                 }
             }
 
+            branchNodes.push_back(lowestLowerBoundNode);
             currentBranches.push_back(branchNodes);
         }
 
@@ -106,58 +113,39 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
     }
 
     auto bestNode = std::min_element(latestNodes.begin(), latestNodes.end(), [](auto lhs, auto rhs)
-                                                                            {
-                                                                                return lhs.currentDistance < rhs.currentDistance;
-                                                                            });
+    {
+        return lhs.currentDistance < rhs.currentDistance;
+    });
 
     return std::make_pair(bestNode->currentPath, bestNode->currentDistance);
 }
 
-const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const
+const std::vector<std::vector<double>>& TSPBranchAndBoundGreedy::getCitiesMatrix() const
 {
     return distances;
 }
 
-int TSPBranchAndBound::calculateRootLowerBound() const
+int TSPBranchAndBoundGreedy::calculateRootLowerBound() const
 {
     int lowerBound = 0;
 
     for(auto oneCityDistances : distances)
     {
         lowerBound += *std::min_element(oneCityDistances.begin(), oneCityDistances.end(), [](auto lhs, auto rhs)
-                                                                                        {
-                                                                                            if(lhs == 0)
-                                                                                                return false;
-                                                                                            else if(rhs == 0)
-                                                                                                return true;
-                                                                                            else
-                                                                                                return lhs < rhs;
-                                                                                        });
+        {
+            if(lhs == 0)
+                return false;
+            else if(rhs == 0)
+                return true;
+            else
+                return lhs < rhs;
+        });
     }
 
     return lowerBound;
 }
 
-int TSPBranchAndBound::calculateUpperBound() const
-{
-    int startCity = 0;
-    int upperBound = 0;
-    std::vector<int> usedCities;
-
-    usedCities.push_back(startCity);
-
-    while(usedCities.size() < distances.size())
-    {
-        auto lastCity = usedCities.back();
-        auto bestCity = ;
-        auto bestCityDistance = ;
-
-
-    }
-
-}
-
-int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
+int TSPBranchAndBoundGreedy::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
 {
     int lowerBound = 0;
 
@@ -209,4 +197,3 @@ int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCitie
 
     return lowerBound;
 }
-

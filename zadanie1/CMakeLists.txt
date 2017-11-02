@@ -19,6 +19,7 @@ set(TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/test)
 set(SOURCES
         ${SOURCE_DIR}/TSPBruteForce.cpp
         ${SOURCE_DIR}/TSPBranchAndBound.cpp
+        ${SOURCE_DIR}/TSPBranchAndBoundGreedy.cpp
         ${SOURCE_DIR}/Node.cpp
 )
 
@@ -29,6 +30,7 @@ set(EXEC_ONLY_SRCS
 set(INCLUDES
         ${INCLUDE_DIR}/TSPBruteForce.h
         ${INCLUDE_DIR}/TSPBranchAndBound.h
+        ${INCLUDE_DIR}/TSPBranchAndBoundGreedy.h
         ${INCLUDE_DIR}/Node.h
 )
 
