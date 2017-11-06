@@ -21,6 +21,7 @@ set(SOURCES
         ${SOURCE_DIR}/TSPBranchAndBound.cpp
         ${SOURCE_DIR}/TSPBranchAndBoundGreedy.cpp
         ${SOURCE_DIR}/Node.cpp
+        ${SOURCE_DIR}/TSPGenerator.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -32,6 +33,7 @@ set(INCLUDES
         ${INCLUDE_DIR}/TSPBranchAndBound.h
         ${INCLUDE_DIR}/TSPBranchAndBoundGreedy.h
         ${INCLUDE_DIR}/Node.h
+        ${INCLUDE_DIR}/TSPGenerator.h
 )
 
 set(INTERFACES

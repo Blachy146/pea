@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <list>
 
 TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
 {
@@ -142,19 +143,45 @@ int TSPBranchAndBound::calculateUpperBound() const
 {
     int startCity = 0;
     int upperBound = 0;
-    std::vector<int> usedCities;
+    std::vector<int> path;
+    std::list<int> availableCities;
 
-    usedCities.push_back(startCity);
-
-    while(usedCities.size() < distances.size())
+    for(auto i = 0; i < distances.size(); ++i)
     {
-        auto lastCity = usedCities.back();
-        auto bestCity = ;
-        auto bestCityDistance = ;
-
-
+        if(i != startCity)
+        {
+            availableCities.push_back(i);
+        }
     }
 
+    path.push_back(startCity);
+
+    while(path.size() < distances.size())
+    {
+        auto lastCity = path.back();
+        auto bestCity = *availableCities.begin();
+        auto bestCityDistance = distances[lastCity][*availableCities.begin()];
+
+        for(auto city : availableCities)
+        {
+            auto distance = distances[lastCity][city];
+
+            if(distance < bestCityDistance)
+            {
+                bestCity = city;
+                bestCityDistance = distance;
+            }
+        }
+
+        path.push_back(bestCity);
+        availableCities.remove(bestCity);
+        upperBound += bestCityDistance;
+    }
+
+    upperBound += distances[path.back()][path.front()];
+    path.push_back(*path.begin());
+
+    return upperBound;
 }
 
 int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
