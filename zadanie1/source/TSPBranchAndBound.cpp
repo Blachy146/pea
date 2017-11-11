@@ -118,7 +118,7 @@ int TSPBranchAndBound::calculateRootLowerBound() const
     return lowerBound;
 }
 
-int TSPBranchAndBound::calculateUpperBound() const
+int TSPBranchAndBound::calculateUpperBound()
 {
     int startCity = 0;
     int upperBound = 0;
@@ -159,6 +159,7 @@ int TSPBranchAndBound::calculateUpperBound() const
 
     upperBound += distances[path.back()][path.front()];
     path.push_back(*path.begin());
+    bestPath = path;
 
     return upperBound;
 }

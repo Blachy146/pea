@@ -15,7 +15,7 @@ public:
     const std::vector<std::vector<double>>& getCitiesMatrix() const;
 private:
     void branchAndBound(Node& node);
-    int calculateUpperBound() const;
+    int calculateUpperBound();
     int calculateRootLowerBound() const;
     int calculateNodeLowerBound(const Node& node) const;
 

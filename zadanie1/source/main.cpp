@@ -11,6 +11,23 @@
 
 int main()
 {
+    TSPBranchAndBound tsp("/home/bmalecki/1");
+    auto matrix = tsp.getCitiesMatrix();
+    for(auto a : matrix)
+    {
+        for(auto i : a)
+        {
+            std::cout << i << " ";
+        }
+        std::cout << "\n";
+    }
+
+    auto result = tsp.getPath();
+    std::cout << "Distance = " << result.second << "\n";
+    for(auto city : result.first)
+        std::cout << city << " ";
+    std::cout << "\n";
+    /*
     std::ofstream ofs("/home/bmalecki/times");
     const std::vector<int> instanceSizes {6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
     const int numberOfInstances = 3;
@@ -100,4 +117,5 @@ int main()
     }
 
     ofs.close();
+     */
 }
