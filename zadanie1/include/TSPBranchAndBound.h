@@ -14,11 +14,13 @@ public:
     std::pair<std::vector<int>, double> getPath() override;
     const std::vector<std::vector<double>>& getCitiesMatrix() const;
 private:
+    void branchAndBound(Node& node);
     int calculateUpperBound() const;
     int calculateRootLowerBound() const;
-    int calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const;
+    int calculateNodeLowerBound(const Node& node) const;
 
     std::vector<std::vector<double>> distances;
-    std::vector<Node> latestNodes;
     double upperBound;
+    double bestDistance;
+    std::vector<int> bestPath;
 };

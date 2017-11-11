@@ -16,7 +16,7 @@ public:
     const std::vector<std::vector<double>>& getCitiesMatrix() const;
 private:
     int calculateRootLowerBound() const;
-    int calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const;
+    int calculateNodeLowerBound(const Node& node) const;
 
     std::vector<std::vector<double>> distances;
     std::vector<Node> latestNodes;

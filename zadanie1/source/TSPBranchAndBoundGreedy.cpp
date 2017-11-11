@@ -71,23 +71,19 @@ std::pair<std::vector<int>, double> TSPBranchAndBoundGreedy::getPath()
 
             Node lowestLowerBoundNode;
 
-            lowestLowerBoundNode.currentPathDistances = node.currentPathDistances;
-            lowestLowerBoundNode.currentPathDistances.push_back(distances[node.currentPath.back()][availableCities[0]]);
             lowestLowerBoundNode.currentPath = node.currentPath;
             lowestLowerBoundNode.currentPath.push_back(availableCities[0]);
-            lowestLowerBoundNode.lowerBound = calculateNodeLowerBound(lowestLowerBoundNode.currentPath, lowestLowerBoundNode.currentPathDistances);
-            lowestLowerBoundNode.currentDistance = node.currentDistance + lowestLowerBoundNode.currentPathDistances.back();
+            lowestLowerBoundNode.lowerBound = calculateNodeLowerBound(node);
+            lowestLowerBoundNode.currentDistance = node.currentDistance + distances[node.currentPath.back()][availableCities[0]];
 
             for(auto nextCity : availableCities)
             {
                 Node newNode;
 
-                newNode.currentPathDistances = node.currentPathDistances;
-                newNode.currentPathDistances.push_back(distances[node.currentPath.back()][nextCity]);
                 newNode.currentPath = node.currentPath;
                 newNode.currentPath.push_back(nextCity);
-                newNode.lowerBound = calculateNodeLowerBound(newNode.currentPath, newNode.currentPathDistances);
-                newNode.currentDistance = node.currentDistance + newNode.currentPathDistances.back();
+                newNode.lowerBound = calculateNodeLowerBound(newNode);
+                newNode.currentDistance = node.currentDistance + distances[node.currentPath.back()][nextCity];
 
                 if(newNode.lowerBound < lowestLowerBoundNode.lowerBound)
                 {
@@ -145,29 +141,17 @@ int TSPBranchAndBoundGreedy::calculateRootLowerBound() const
     return lowerBound;
 }
 
-int TSPBranchAndBoundGreedy::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
+int TSPBranchAndBoundGreedy::calculateNodeLowerBound(const Node& node) const
 {
     int lowerBound = 0;
 
-    for(auto usedDistance : usedDistances)
-    {
-        lowerBound += usedDistance;
-    }
+    lowerBound += node.currentDistance;
 
-    auto lastCity = usedCities.back();
-    std::vector<int> citiesTo;
-
-    for(auto i = 0; i < distances.size(); ++i)
-    {
-        if(std::find(usedCities.begin(), usedCities.end(), i) == usedCities.end())
-        {
-            citiesTo.push_back(i);
-        }
-    }
+    auto lastCity = node.currentPath.back();
 
     std::vector<double> availableDistances;
 
-    for(auto city : citiesTo)
+    for(auto city : node.availableCities)
     {
         availableDistances.push_back(distances[lastCity][city]);
     }
@@ -177,8 +161,9 @@ int TSPBranchAndBoundGreedy::calculateNodeLowerBound(const std::vector<int> &use
 
     lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
 
-    std::vector<int> citiesFrom = citiesTo;
-    citiesTo.push_back(*usedCities.begin());
+    auto citiesTo = node.availableCities;
+    std::vector<int> citiesFrom = node.availableCities;
+    citiesTo.push_back(*node.currentPath.begin());
 
     for(auto cityFrom : citiesFrom)
     {
@@ -197,3 +182,4 @@ int TSPBranchAndBoundGreedy::calculateNodeLowerBound(const std::vector<int> &use
 
     return lowerBound;
 }
+

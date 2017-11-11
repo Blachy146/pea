@@ -6,7 +6,7 @@ class Node
 {
 public:
     std::vector<int> currentPath;
-    std::vector<double> currentPathDistances;
+    std::vector<int> availableCities;
     double lowerBound;
     double currentDistance;
 };

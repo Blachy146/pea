@@ -1,6 +1,5 @@
 #include <TSPBruteForce.h>
 
-#include <gtest/gtest.h>
 #include <fstream>
 
 using namespace ::testing;

@@ -12,8 +12,8 @@
 int main()
 {
     std::ofstream ofs("/home/bmalecki/times");
-    const std::vector<int> instanceSizes {3, 4, 5, 6, 7, 8, 10};
-    const int numberOfInstances = 5;
+    const std::vector<int> instanceSizes {6, 8, 10, 12, 14, 15, 17};
+    const int numberOfInstances = 3;
     std::vector<double> times {0.0, 0.0, 0.0};
 
     TSPGenerator tspGenerator;
@@ -54,17 +54,20 @@ int main()
                         break;
                 }
 
-                auto start = std::chrono::steady_clock::now();
-                auto result = tsp.get()->getPath();
-                auto end = std::chrono::steady_clock::now();
+                if(tsp != nullptr)
+                {
+                    auto start = std::chrono::steady_clock::now();
+                    auto result = tsp.get()->getPath();
+                    auto end = std::chrono::steady_clock::now();
 
-                std::cout << "Result = " << result.second << "\n";
+                    std::cout << "Result = " << result.second << "\n";
 
-                double duration = std::chrono::duration<double, std::milli>(end - start).count();
-                std::cout << "Duration = " << duration << "\n";
-                std::cout << "--------------------------------------------\n";
+                    double duration = std::chrono::duration<double, std::milli>(end - start).count();
+                    std::cout << "Duration = " << duration << "\n";
+                    std::cout << "--------------------------------------------\n";
 
-                times[j] += duration;
+                    times[j] += duration;
+                }
             }
         }
 

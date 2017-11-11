@@ -36,75 +36,101 @@ TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
     upperBound = calculateUpperBound();
 }
 
+void TSPBranchAndBound::branchAndBound(Node &node)
+{
+    if (node.currentPath.size() == distances.size())
+    {
+        node.currentDistance += distances[node.currentPath.back()][0];
+        if (node.currentDistance < bestDistance)
+        {
+            bestDistance = node.currentDistance;
+            bestPath = node.currentPath;
+        }
+        return;
+    }
+
+    std::vector<Node> nodes;
+
+    for(auto city : node.availableCities)
+    {
+        Node newNode;
+        newNode.currentPath = node.currentPath;
+        newNode.currentPath.push_back(city);
+        newNode.currentDistance = node.currentDistance + distances[node.currentPath.back()][city];
+        newNode.lowerBound = calculateNodeLowerBound(newNode);
+
+        if(newNode.lowerBound < upperBound)
+        {
+            newNode.availableCities = node.availableCities;
+            newNode.availableCities.erase(std::find(newNode.availableCities.begin(), newNode.availableCities.end(), city));
+
+            nodes.push_back(newNode);
+        }
+    }
+
+    for (auto& node : nodes)
+    {
+        branchAndBound(node);
+    }
+}
+
 std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
 {
-    bool endOfCalculatingPath = false;
     int startCity = 0;
+    bestDistance = calculateUpperBound();
 
     Node rootNode;
-
     rootNode.currentPath.push_back(startCity);
     rootNode.lowerBound = calculateRootLowerBound();
     rootNode.currentDistance = 0;
+
+    for(auto i = 0; i < distances.size(); ++i)
+    {
+        if(i != startCity)
+            rootNode.availableCities.push_back(i);
+    }
+
+    branchAndBound(rootNode);
+
+    return std::make_pair(bestPath, bestDistance);
+
+    /*
+    bool endOfCalculatingPath = false;
+    std::vector<Node> latestNodes;
+    std::vector<Node> currentNodes;
+
+
 
     latestNodes.push_back(rootNode);
 
     while(!endOfCalculatingPath)
     {
-        std::vector<std::vector<Node>> currentBranches;
+        currentNodes.clear();
 
         for(auto node : latestNodes)
         {
-            std::vector<int> availableCities;
-
-            for(auto i = 0; i < distances.size(); ++i)
+            if(node.availableCities.size() == 0)
             {
-                if(std::find(node.currentPath.begin(), node.currentPath.end(), i) == node.currentPath.end())
-                {
-                    availableCities.push_back(i);
-                }
-            }
-
-            if(availableCities.size() == 0)
-            {
-                availableCities.push_back(*node.currentPath.begin());
+                node.availableCities.push_back(*node.currentPath.begin());
                 endOfCalculatingPath = true;
             }
 
-            std::vector<Node> branchNodes;
-
-            for(auto nextCity : availableCities)
+            for(auto nextCity : node.availableCities)
             {
-                Node newNode;
 
-                newNode.currentPathDistances = node.currentPathDistances;
-                newNode.currentPathDistances.push_back(distances[node.currentPath.back()][nextCity]);
-                newNode.currentPath = node.currentPath;
-                newNode.currentPath.push_back(nextCity);
-                newNode.lowerBound = calculateNodeLowerBound(newNode.currentPath, newNode.currentPathDistances);
-                newNode.currentDistance = node.currentDistance + newNode.currentPathDistances.back();
-
-                if(newNode.lowerBound <= upperBound)
-                {
-                    branchNodes.push_back(newNode);
-                }
             }
-
-            currentBranches.push_back(branchNodes);
         }
 
         latestNodes.clear();
 
-        for(auto branch : currentBranches)
+        for(auto node : currentNodes)
         {
-            for(auto node : branch)
-            {
-                latestNodes.push_back(node);
-            }
+            latestNodes.push_back(std::move(node));
         }
 
-        currentBranches.clear();
     }
+
+    std::cout << "Number of latest nodes = " << latestNodes.size() << "\n";
 
     auto bestNode = std::min_element(latestNodes.begin(), latestNodes.end(), [](auto lhs, auto rhs)
                                                                             {
@@ -112,6 +138,7 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
                                                                             });
 
     return std::make_pair(bestNode->currentPath, bestNode->currentDistance);
+     */
 }
 
 const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const
@@ -184,29 +211,17 @@ int TSPBranchAndBound::calculateUpperBound() const
     return upperBound;
 }
 
-int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCities, const std::vector<double> &usedDistances) const
+int TSPBranchAndBound::calculateNodeLowerBound(const Node& node) const
 {
     int lowerBound = 0;
 
-    for(auto usedDistance : usedDistances)
-    {
-        lowerBound += usedDistance;
-    }
+    lowerBound += node.currentDistance;
 
-    auto lastCity = usedCities.back();
-    std::vector<int> citiesTo;
-
-    for(auto i = 0; i < distances.size(); ++i)
-    {
-        if(std::find(usedCities.begin(), usedCities.end(), i) == usedCities.end())
-        {
-            citiesTo.push_back(i);
-        }
-    }
+    auto lastCity = node.currentPath.back();
 
     std::vector<double> availableDistances;
 
-    for(auto city : citiesTo)
+    for(auto city : node.availableCities)
     {
         availableDistances.push_back(distances[lastCity][city]);
     }
@@ -216,8 +231,9 @@ int TSPBranchAndBound::calculateNodeLowerBound(const std::vector<int> &usedCitie
 
     lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
 
-    std::vector<int> citiesFrom = citiesTo;
-    citiesTo.push_back(*usedCities.begin());
+    auto citiesTo = node.availableCities;
+    std::vector<int> citiesFrom = node.availableCities;
+    citiesTo.push_back(*node.currentPath.begin());
 
     for(auto cityFrom : citiesFrom)
     {
