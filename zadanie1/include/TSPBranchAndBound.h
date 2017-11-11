@@ -20,7 +20,6 @@ private:
     int calculateNodeLowerBound(const Node& node) const;
 
     std::vector<std::vector<double>> distances;
-    double upperBound;
     double bestDistance;
     std::vector<int> bestPath;
 };

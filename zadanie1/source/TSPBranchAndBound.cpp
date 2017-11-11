@@ -33,7 +33,7 @@ TSPBranchAndBound::TSPBranchAndBound(const std::string &dataFilePath)
         distances.push_back(oneCityDistances);
     }
 
-    upperBound = calculateUpperBound();
+    bestDistance = calculateUpperBound();
 }
 
 void TSPBranchAndBound::branchAndBound(Node &node)
@@ -57,13 +57,12 @@ void TSPBranchAndBound::branchAndBound(Node &node)
         newNode.currentPath = node.currentPath;
         newNode.currentPath.push_back(city);
         newNode.currentDistance = node.currentDistance + distances[node.currentPath.back()][city];
+        newNode.availableCities = node.availableCities;
+        newNode.availableCities.erase(std::find(newNode.availableCities.begin(), newNode.availableCities.end(), city));
         newNode.lowerBound = calculateNodeLowerBound(newNode);
 
-        if(newNode.lowerBound < upperBound)
+        if(newNode.lowerBound <= bestDistance)
         {
-            newNode.availableCities = node.availableCities;
-            newNode.availableCities.erase(std::find(newNode.availableCities.begin(), newNode.availableCities.end(), city));
-
             nodes.push_back(newNode);
         }
     }
@@ -77,7 +76,6 @@ void TSPBranchAndBound::branchAndBound(Node &node)
 std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
 {
     int startCity = 0;
-    bestDistance = calculateUpperBound();
 
     Node rootNode;
     rootNode.currentPath.push_back(startCity);
@@ -93,52 +91,6 @@ std::pair<std::vector<int>, double> TSPBranchAndBound::getPath()
     branchAndBound(rootNode);
 
     return std::make_pair(bestPath, bestDistance);
-
-    /*
-    bool endOfCalculatingPath = false;
-    std::vector<Node> latestNodes;
-    std::vector<Node> currentNodes;
-
-
-
-    latestNodes.push_back(rootNode);
-
-    while(!endOfCalculatingPath)
-    {
-        currentNodes.clear();
-
-        for(auto node : latestNodes)
-        {
-            if(node.availableCities.size() == 0)
-            {
-                node.availableCities.push_back(*node.currentPath.begin());
-                endOfCalculatingPath = true;
-            }
-
-            for(auto nextCity : node.availableCities)
-            {
-
-            }
-        }
-
-        latestNodes.clear();
-
-        for(auto node : currentNodes)
-        {
-            latestNodes.push_back(std::move(node));
-        }
-
-    }
-
-    std::cout << "Number of latest nodes = " << latestNodes.size() << "\n";
-
-    auto bestNode = std::min_element(latestNodes.begin(), latestNodes.end(), [](auto lhs, auto rhs)
-                                                                            {
-                                                                                return lhs.currentDistance < rhs.currentDistance;
-                                                                            });
-
-    return std::make_pair(bestNode->currentPath, bestNode->currentDistance);
-     */
 }
 
 const std::vector<std::vector<double>>& TSPBranchAndBound::getCitiesMatrix() const
@@ -227,7 +179,9 @@ int TSPBranchAndBound::calculateNodeLowerBound(const Node& node) const
     }
 
     if(availableDistances.size() == 0)
+    {
         return lowerBound;
+    }
 
     lowerBound += *std::min_element(availableDistances.begin(), availableDistances.end());
 

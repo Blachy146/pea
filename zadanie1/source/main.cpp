@@ -12,7 +12,7 @@
 int main()
 {
     std::ofstream ofs("/home/bmalecki/times");
-    const std::vector<int> instanceSizes {6, 8, 10, 12, 14, 15, 17};
+    const std::vector<int> instanceSizes {6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
     const int numberOfInstances = 3;
     std::vector<double> times {0.0, 0.0, 0.0};
 
@@ -42,7 +42,7 @@ int main()
                         tsp = std::make_unique<TSPBranchAndBound>("/home/bmalecki/tsp");
                         break;
                     case 2:
-                        if(instanceSize < 12)
+                        if(instanceSize <= 12)
                         {
                             std::cout << "Bruteforce\n";
                             tsp = std::make_unique<TSPBruteForce>("/home/bmalecki/tsp");

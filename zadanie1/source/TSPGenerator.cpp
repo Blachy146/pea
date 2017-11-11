@@ -25,7 +25,7 @@ private:
 void TSPGenerator::generate(int numberOfCities)
 {
     std::ofstream ofs("/home/bmalecki/tsp");
-    RandomGenerator randomGenerator(1, 20);
+    RandomGenerator randomGenerator(1, 100);
     ofs << numberOfCities;
 
     for(auto i = 0; i < numberOfCities; ++i)
