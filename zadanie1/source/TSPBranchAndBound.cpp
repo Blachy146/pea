@@ -41,6 +41,7 @@ void TSPBranchAndBound::branchAndBound(Node &node)
     if (node.currentPath.size() == distances.size())
     {
         node.currentDistance += distances[node.currentPath.back()][0];
+        node.currentPath.push_back(0);
         if (node.currentDistance < bestDistance)
         {
             bestDistance = node.currentDistance;

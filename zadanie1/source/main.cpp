@@ -1,121 +1,92 @@
 #include <TSPBruteForce.h>
 #include <TSPBranchAndBound.h>
-#include <TSP.h>
-#include <TSPBranchAndBoundGreedy.h>
 #include <iostream>
 #include <TSPGenerator.h>
 #include <chrono>
 #include <memory>
 #include <fstream>
 
+void printMenu()
+{
+    std::cout << "------------MENU------------\n";
+    std::cout << "1. Bruteforce\n";
+    std::cout << "2. BnB\n";
+    std::cout << "3. Bruteforce i BnB\n";
+    std::cout << "0. Wyjscie\n";
+}
+
+int getOption()
+{
+    int option = 0;
+    std::cin >> option;
+
+    return option;
+}
+
+std::string getFileName()
+{
+    std::string file;
+    std::cout << "Plik: ";
+    std::cin >> file;
+
+    return file;
+}
 
 int main()
 {
-    TSPBranchAndBound tsp("/home/bmalecki/1");
-    auto matrix = tsp.getCitiesMatrix();
-    for(auto a : matrix)
+    bool endProgram = false;
+
+    while(!endProgram)
     {
-        for(auto i : a)
+        printMenu();
+        int option = getOption();
+
+        switch(option)
         {
-            std::cout << i << " ";
+        case 1:
+        {
+            auto tsp = std::make_unique<TSPBruteForce>(getFileName());
+            auto result = tsp->getPath();
+            std::cout << "Distance = " << result.second << "\n";
+            for(auto city : result.first)
+                std::cout << city << " ";
+            std::cout << "\n";
+            break;
         }
-        std::cout << "\n";
+        case 2:
+        {
+            auto tsp = std::make_unique<TSPBranchAndBound>(getFileName());
+            auto result = tsp->getPath();
+            std::cout << "Distance = " << result.second << "\n";
+            for(auto city : result.first)
+                std::cout << city << " ";
+            std::cout << "\n";
+            break;
+        }
+        case 3:
+        {
+            auto file = getFileName();
+            auto brute = std::make_unique<TSPBruteForce>(file);
+            auto bnb = std::make_unique<TSPBranchAndBound>(file);
+            auto result1 = brute->getPath();
+            std::cout << "BruteForce: \n";
+            std::cout << "Distance = " << result1.second << "\n";
+            for(auto city : result1.first)
+                std::cout << city << " ";
+            std::cout << "\n";
+            auto result2 = bnb->getPath();
+            std::cout << "Branch and bound: \n";
+            std::cout << "Distance = " << result2.second << "\n";
+            for(auto city : result2.first)
+                std::cout << city << " ";
+            std::cout << "\n";
+            break;
+        }
+        case 0:
+            endProgram = true;
+            break;
+        default:
+            break;
+        }
     }
-
-    auto result = tsp.getPath();
-    std::cout << "Distance = " << result.second << "\n";
-    for(auto city : result.first)
-        std::cout << city << " ";
-    std::cout << "\n";
-    /*
-    std::ofstream ofs("/home/bmalecki/times");
-    const std::vector<int> instanceSizes {6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26};
-    const int numberOfInstances = 3;
-    std::vector<double> times {0.0, 0.0, 0.0};
-
-    TSPGenerator tspGenerator;
-
-    for(auto instanceSize : instanceSizes)
-    {
-        for(auto i = 0; i < numberOfInstances; ++i)
-        {
-            tspGenerator.generate(instanceSize);
-
-            for(auto j = 0; j < 3; ++j)
-            {
-                std::unique_ptr<TSP> tsp;
-
-                std::cout << "--------------------------------------------\n";
-                std::cout << "Number of cities = " << instanceSize << "\n";
-
-                switch(j)
-                {
-                    case 0:
-                        std::cout << "BnB Greedy\n";
-                        tsp = std::make_unique<TSPBranchAndBoundGreedy>("/home/bmalecki/tsp");
-                        break;
-                    case 1:
-                        std::cout << "BnB\n";
-                        tsp = std::make_unique<TSPBranchAndBound>("/home/bmalecki/tsp");
-                        break;
-                    case 2:
-                        if(instanceSize <= 12)
-                        {
-                            std::cout << "Bruteforce\n";
-                            tsp = std::make_unique<TSPBruteForce>("/home/bmalecki/tsp");
-                        }
-                        else
-                        {
-                            std::cout << "Too much for bruteforce\n";
-                        }
-                        break;
-                }
-
-                if(tsp != nullptr)
-                {
-                    auto start = std::chrono::steady_clock::now();
-                    auto result = tsp.get()->getPath();
-                    auto end = std::chrono::steady_clock::now();
-
-                    std::cout << "Result = " << result.second << "\n";
-
-                    double duration = std::chrono::duration<double, std::milli>(end - start).count();
-                    std::cout << "Duration = " << duration << "\n";
-                    std::cout << "--------------------------------------------\n";
-
-                    times[j] += duration;
-                }
-            }
-        }
-
-        for(auto k = 0; k < times.size(); ++k)
-        {
-            if(k == 0)
-            {
-                ofs << "---------------------------------------\n";
-                ofs << "BnB Greedy:\n";
-            }
-            else if(k == 1)
-            {
-                ofs << "---------------------------------------\n";
-                ofs << "BnB:\n";
-            }
-            else if(k == 2)
-            {
-                ofs << "---------------------------------------\n";
-                ofs << "Bruteforce:\n";
-            }
-
-            ofs << "Instance size = " << instanceSize << "\n";
-            ofs << "Time = " << times[k]/numberOfInstances << "\n";
-            ofs << "---------------------------------------\n";
-        }
-
-        times[0] = 0.0;
-        times[1] = 0.0;
-        times[2] = 0.0;
-    }
-
-    ofs.close();
-     */
 }
