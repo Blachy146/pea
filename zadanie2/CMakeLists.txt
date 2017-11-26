@@ -10,6 +10,7 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 
 set(SOURCES
+    ${SOURCE_DIR}/TabuSearch.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -17,6 +18,7 @@ set(EXEC_ONLY_SRCS
 )
 
 set(INCLUDES
+    ${INCLUDE_DIR}/TabuSearch.hpp
 )
 
 set(INTERFACES
