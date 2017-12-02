@@ -1,11 +1,15 @@
+#include "TabuSearch.hpp"
+
 #include <iostream>
 
-#include "TabuSearch.hpp"
 
 int main()
 {
     TabuSearch tabuSearch;
-
-    tabuSearch.readDistancesFromFile("/home/bmalecki/tsp");
+    tabuSearch.loadFromFile("/home/bmalecki/Downloads/atsp");
+    std::cout << "----------Matrix----------\n";
+    tabuSearch.printDistancesMatrix();
+    tabuSearch.loadFromFile("/home/bmalecki/Downloads/tsp");
+    std::cout << "----------Lower diagonal----------\n";
     tabuSearch.printDistancesMatrix();
 }

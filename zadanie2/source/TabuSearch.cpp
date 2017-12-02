@@ -4,38 +4,15 @@
 #include <sstream>
 #include <iostream>
 
+
 TabuSearch::TabuSearch()
 {
-
 }
 
-void TabuSearch::readDistancesFromFile(const std::string& filePath) 
+void TabuSearch::loadFromFile(const std::string& filePath) 
 {
-    std::ifstream ifs(filePath);
-
-    auto numberOfCities = 0;
-    std::string line = "";
-
-    ifs >> numberOfCities;
-    std::getline(ifs, line);
-
-    for(auto i = 0; i < numberOfCities; ++i)
-    {
-        std::getline(ifs, line);
-
-        std::stringstream lineStream(line);
-        std::vector<int> oneCityDistances;
-
-        for(auto j = 0; j < numberOfCities; ++j)
-        {
-            int distance;
-
-            lineStream >> distance;
-            oneCityDistances.push_back(distance);
-        }
-
-        distances.push_back(oneCityDistances);
-    }
+    parser.loadDataFromFile(filePath);
+    distances = parser.getCitiesMatrix();
 }
 
 void TabuSearch::printDistancesMatrix() const
@@ -53,5 +30,4 @@ void TabuSearch::printDistancesMatrix() const
 
 TabuSearch::~TabuSearch()
 {
-
 }

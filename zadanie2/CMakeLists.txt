@@ -11,6 +11,7 @@ set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 
 set(SOURCES
     ${SOURCE_DIR}/TabuSearch.cpp
+    ${SOURCE_DIR}/Parser.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -19,6 +20,7 @@ set(EXEC_ONLY_SRCS
 
 set(INCLUDES
     ${INCLUDE_DIR}/TabuSearch.hpp
+    ${INCLUDE_DIR}/Parser.hpp
 )
 
 set(INTERFACES
