@@ -35,7 +35,7 @@ void Parser::tryToLoadFromFile(const std::string& filePath)
         lineStream = std::stringstream(line);
         lineStream >> dataFormat;
 
-        if(dataFormat != "EDGE_WEIGHT_TYPE" && dataFormat != "EDGE_WEIGHT_TYPE:")
+        if(dataFormat == "EDGE_WEIGHT_TYPE" || dataFormat == "EDGE_WEIGHT_TYPE:")
         {
             dataTypeLine = line;
         }
@@ -45,30 +45,39 @@ void Parser::tryToLoadFromFile(const std::string& filePath)
 
     } while(dataFormat != "EDGE_WEIGHT_FORMAT" && dataFormat != "EDGE_WEIGHT_FORMAT:");
 
-    if(dataFormat == "EDGE_WEIGHT_TYPE")
-    {
-        lineStream >> dataFormat;
-        lineStream >> dataFormat;
-    }
-    else if(dataFormat == "EDGE_WEIGHT_TYPE:")
-    {
-        lineStream >> dataFormat;
-    }
-    else if(dataType...) //todo
+    std::stringstream typeStream(dataTypeLine);
+    typeStream >> dataType;
 
-    std::cout << "dataFormat = " << dataFormat << "\n";
+    if(dataFormat == "EDGE_WEIGHT_FORMAT")
+    {
+        lineStream >> dataFormat;
+        lineStream >> dataFormat;
+    }
+    else if(dataFormat == "EDGE_WEIGHT_FORMAT:")
+    {
+        lineStream >> dataFormat;
+    }
+    else if(dataType == "EDGE_WEIGHT_TYPE:")
+    {
+        typeStream >> dataType;
+    }
+    else if(dataType == "EDGE_WEIGHT_TYPE")
+    {
+        typeStream >> dataType;
+        typeStream >> dataType;
+    }
 
     ifs.close();
 
-    if(dataFormat == "LOWER_DIAG_ROW")
+    if(dataFormat == "LOWER_DIAG_ROW" || dataType == "LOWER_DIAG_ROW")
     {
         loadLowerDiagonalRow(filePath);    
     }
-    else if(dataFormat == "FULL_MATRIX")
+    else if(dataFormat == "FULL_MATRIX" || dataType == "FULL_MATRIX")
     {
         loadCitiesMatrix(filePath);
     }
-    else if(dataFormat == "EUC_2D")
+    else if(dataFormat == "EUC_2D" || dataType == "EUC_2D")
     {
         loadCitiesList(filePath);
     }
