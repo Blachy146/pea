@@ -3,13 +3,79 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include <sstream>
+#include <cmath>
 #include <iostream>
 
-
-std::list<std::tuple<int, int, int> > Parser::getCitiesList() const
+Parser::Parser()
 {
-    return citiesList;
+}
+
+void Parser::tryToLoadFromFile(const std::string& filePath)
+{
+    std::ifstream ifs(filePath);
+
+    if(!ifs.is_open())
+    {
+        throw std::runtime_error("Cannot open file!");
+    }
+
+    std::string line;
+    std::string dataTypeLine;
+    std::string dataFormat;
+    std::string dataType;
+    std::stringstream lineStream;
+
+    auto loopNumber = 0;
+
+    do
+    {
+        ++loopNumber;
+
+        std::getline(ifs, line);
+        lineStream = std::stringstream(line);
+        lineStream >> dataFormat;
+
+        if(dataFormat != "EDGE_WEIGHT_TYPE" && dataFormat != "EDGE_WEIGHT_TYPE:")
+        {
+            dataTypeLine = line;
+        }
+
+        if(loopNumber > 7)
+            break;
+
+    } while(dataFormat != "EDGE_WEIGHT_FORMAT" && dataFormat != "EDGE_WEIGHT_FORMAT:");
+
+    if(dataFormat == "EDGE_WEIGHT_TYPE")
+    {
+        lineStream >> dataFormat;
+        lineStream >> dataFormat;
+    }
+    else if(dataFormat == "EDGE_WEIGHT_TYPE:")
+    {
+        lineStream >> dataFormat;
+    }
+    else if(dataType...) //todo
+
+    std::cout << "dataFormat = " << dataFormat << "\n";
+
+    ifs.close();
+
+    if(dataFormat == "LOWER_DIAG_ROW")
+    {
+        loadLowerDiagonalRow(filePath);    
+    }
+    else if(dataFormat == "FULL_MATRIX")
+    {
+        loadCitiesMatrix(filePath);
+    }
+    else if(dataFormat == "EUC_2D")
+    {
+        loadCitiesList(filePath);
+    }
+    else
+    {
+        throw std::runtime_error("Unknown data type!");
+    }
 }
 
 std::vector<std::vector<int> > Parser::getCitiesMatrix() const
@@ -17,45 +83,23 @@ std::vector<std::vector<int> > Parser::getCitiesMatrix() const
     return citiesMatrix;
 }
 
-void Parser::loadDataFromFile(const std::string& filePath)
+void Parser::convertToMatrix()
 {
-    std::ifstream ifs(filePath);
-
-    if(!ifs.is_open())
+    std::vector<std::vector<int> > matrix(citiesList.size(), std::vector<int>(citiesList.size()));
+    int x, y;
+    auto it1 = citiesList.begin();
+    auto it2 = citiesList.begin();
+    for (int i = 0; i < citiesList.size(); ++i, ++it1)
     {
-        throw std::runtime_error("Can't open file");
+        it2 = citiesList.begin();
+        for (auto k = 0; k < citiesList.size(); ++k, ++it2)
+        {
+            x = std::get<1>(*it1) - std::get<1>(*it2);
+            y = std::get<2>(*it1) - std::get<2>(*it2);
+            matrix[i][k] = (lround(sqrt((x * x + y * y))));
+        }
     }
-
-    std::string line = "";
-
-    for(auto i = 0; i < 5; ++i)
-    {
-        std::getline(ifs, line);
-    }
-
-    std::getline(ifs, line);
-    std::stringstream lineStream(line);
-
-    std::string dataTypeHeader = "";
-    std::string dataType = "";
-
-    lineStream >> dataTypeHeader;
-    lineStream >> dataType;
-
-    ifs.close();
-
-    if(dataType == "FULL_MATRIX")
-    {
-        loadCitiesMatrix(filePath);
-    }
-    else if(dataType == "LOWER_DIAG_ROW")
-    {
-        loadLowerDiagonalRow(filePath);
-    }
-    else
-    {
-        throw std::runtime_error("Unknown data type!");
-    }
+    citiesMatrix = std::move(matrix);
 }
 
 bool Parser::loadCitiesList(const std::string& filename)
@@ -80,100 +124,53 @@ bool Parser::loadCitiesList(const std::string& filename)
         file >> cityNumber >> firstCoordinate >> secondCoordinate;
         if (!file.good())
         {
-            return true;
+            break;
         }
         citiesList.push_back(std::make_tuple(cityNumber, firstCoordinate, secondCoordinate));
     }
+    convertToMatrix();
+    return true;
 }
 
 bool Parser::loadCitiesMatrix(const std::string& filename)
 {
-    std::ifstream ifs(filename);
-
-    if (!ifs.is_open())
-    {
-        throw std::runtime_error("Can't open ifs");
-    }
-
-    std::string line;
-
-    for(auto i = 0; i < 2; ++i)
-    {
-        std::getline(ifs, line);
-    }
-
-    std::getline(ifs, line);
-
-    std::string dimensionHeader = "";
     int dimension = 0;
-
-    std::stringstream lineStream(line);
-
-    lineStream >> dimensionHeader;
-    lineStream >> dimension;
-
-    citiesMatrix.resize(dimension);
-
-    for(auto i = 0; i < 4; ++i)
+    std::ifstream file(filename);
+    if (!file.is_open())
     {
-        std::getline(ifs, line);
+        throw std::runtime_error("Can't open file");
     }
-
-    std::string distance = "";
-
-    for (auto i = 0; i < dimension; ++i)
+    std::string line;
+    file >> dimension;
+    citiesMatrix.resize(dimension);
+    for (int i = 0; i < dimension; ++i)
     {
-        for (auto j = 0; j < dimension; ++j)
+        for (int j = 0; j < dimension; ++j)
         {
-            ifs >> distance;
-            citiesMatrix[i].push_back(std::stoi(distance));
+            file >> line;
+            citiesMatrix[i].push_back(std::stoi(line));
         }
     }
-
     return true;
 }
 
 bool Parser::loadLowerDiagonalRow(const std::string & filename)
 {
-    std::ifstream ifs(filename);
-
-    if (!ifs.is_open())
-    {
-        throw std::runtime_error("Can't open ifs");
-    }
-
-    std::string line;
-
-    for(auto i = 0; i < 2; ++i)
-    {
-        std::getline(ifs, line);
-    }
-
-    std::getline(ifs, line);
-
-    std::string dimensionHeader = "";
     int dimension = 0;
-
-    std::stringstream lineStream(line);
-
-    lineStream >> dimensionHeader;
-    lineStream >> dimension;
-
-    citiesMatrix.resize(dimension);
-
-    for(auto i = 0; i < 4; ++i)
+    std::ifstream file(filename);
+    if (!file.is_open())
     {
-        std::getline(ifs, line);
+        throw std::runtime_error("Can't open file");
     }
-
-    std::string distance = "";
-
-    for (auto i = 0; i < dimension; ++i)
+    std::string line;
+    file >> dimension;
+    citiesMatrix.resize(dimension);
+    for (int i = 0; i < dimension; ++i)
     {
-        for (auto j = 0; j < (i + 1); ++j)
+        for (int j = 0; j < (i + 1); ++j)
         {
-            ifs >> distance;
-            citiesMatrix[i].push_back(std::stoi(distance));
+            file >> line;
+            citiesMatrix[i].push_back(std::stoi(line));
         }
     }
     for (int i = 0; i < dimension; ++i)
@@ -183,6 +180,9 @@ bool Parser::loadLowerDiagonalRow(const std::string & filename)
             citiesMatrix[i].push_back(citiesMatrix[j][i]);
         }
     }
-
     return true;
+}
+
+Parser::~Parser()
+{
 }

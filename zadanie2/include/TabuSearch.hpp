@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Parser.hpp"
-#include <string>
-#include <vector>
 
+#include <vector>
+#include <string>
 
 class TabuSearch
 {
 public:
     TabuSearch();
 
-    void loadFromFile(const std::string& filePath);
     void printDistancesMatrix() const;
+    void tryToLoadFromFile(const std::string& filePath);
 
     ~TabuSearch();
 private:

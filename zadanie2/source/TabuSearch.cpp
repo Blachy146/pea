@@ -1,18 +1,10 @@
 #include "TabuSearch.hpp"
 
-#include <fstream>
-#include <sstream>
 #include <iostream>
 
 
 TabuSearch::TabuSearch()
 {
-}
-
-void TabuSearch::loadFromFile(const std::string& filePath) 
-{
-    parser.loadDataFromFile(filePath);
-    distances = parser.getCitiesMatrix();
 }
 
 void TabuSearch::printDistancesMatrix() const
@@ -23,9 +15,23 @@ void TabuSearch::printDistancesMatrix() const
         {
             std::cout << distance << " ";
         }
-
+        
         std::cout << "\n";
     }
+}
+
+void TabuSearch::tryToLoadFromFile(const std::string& filePath)
+{
+    try
+    {
+        parser.tryToLoadFromFile(filePath);
+    }
+    catch(const std::runtime_error& e)
+    {
+        throw e;
+    }
+
+    distances = parser.getCitiesMatrix();
 }
 
 TabuSearch::~TabuSearch()

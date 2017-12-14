@@ -1,15 +1,19 @@
 #include "TabuSearch.hpp"
+#include "Parser.hpp"
+#include "Instance.hpp"
 
+#include <string>
 #include <iostream>
-
 
 int main()
 {
     TabuSearch tabuSearch;
-    tabuSearch.loadFromFile("/home/bmalecki/Downloads/atsp");
-    std::cout << "----------Matrix----------\n";
-    tabuSearch.printDistancesMatrix();
-    tabuSearch.loadFromFile("/home/bmalecki/Downloads/tsp");
-    std::cout << "----------Lower diagonal----------\n";
+
+    std::string filePath = "";
+
+    std::cout << "File path: ";
+    std::cin >> filePath;
+
+    tabuSearch.tryToLoadFromFile(filePath);
     tabuSearch.printDistancesMatrix();
 }

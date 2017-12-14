@@ -5,19 +5,22 @@
 #include <vector>
 #include <tuple>
 
-
 class Parser
 {
 public:
-    Parser() = default;
-    std::list<std::tuple<int, int, int>> getCitiesList() const;
+    Parser();
+
+    void tryToLoadFromFile(const std::string& filePath);
     std::vector<std::vector<int>> getCitiesMatrix() const;
-    void loadDataFromFile(const std::string& filePath);
+
+    ~Parser();
 private:
     bool loadCitiesList(const std::string& filename);
     bool loadCitiesMatrix(const std::string& filename);
     bool loadLowerDiagonalRow(const std::string& filename);
 
-    std::list<std::tuple<int, int, int>> citiesList;
-    std::vector<std::vector<int>> citiesMatrix;
+    void convertToMatrix();
+
+    std::list<std::tuple<int, int, int> > citiesList;
+    std::vector<std::vector<int> > citiesMatrix;
 };
