@@ -1,6 +1,5 @@
 #include "TabuSearch.hpp"
 #include "Parser.hpp"
-#include "Instance.hpp"
 
 #include <string>
 #include <iostream>
@@ -15,5 +14,6 @@ int main()
     std::cin >> filePath;
 
     tabuSearch.tryToLoadFromFile(filePath);
-    tabuSearch.printDistancesMatrix();
+    tabuSearch.setExecuteTime(20.0);
+    tabuSearch.tabuSearch();
 }

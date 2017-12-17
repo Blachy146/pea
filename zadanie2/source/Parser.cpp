@@ -79,7 +79,7 @@ void Parser::tryToLoadFromFile(const std::string& filePath)
     }
     else if(dataFormat == "EUC_2D" || dataType == "EUC_2D")
     {
-        loadCitiesList(filePath);
+        loadCitiesEuclideanList(filePath);
     }
     else
     {
@@ -87,7 +87,7 @@ void Parser::tryToLoadFromFile(const std::string& filePath)
     }
 }
 
-std::vector<std::vector<int> > Parser::getCitiesMatrix() const
+std::vector<std::vector<int> > Parser::getDistancesMatrix() const
 {
     return citiesMatrix;
 }
@@ -111,7 +111,7 @@ void Parser::convertToMatrix()
     citiesMatrix = std::move(matrix);
 }
 
-bool Parser::loadCitiesList(const std::string& filename)
+bool Parser::loadCitiesEuclideanList(const std::string& filename)
 {
     std::ifstream file(filename);
     if (!file.is_open())
@@ -143,15 +143,43 @@ bool Parser::loadCitiesList(const std::string& filename)
 
 bool Parser::loadCitiesMatrix(const std::string& filename)
 {
-    int dimension = 0;
     std::ifstream file(filename);
+
     if (!file.is_open())
     {
         throw std::runtime_error("Can't open file");
     }
+
+    std::string dimensionString;
     std::string line;
-    file >> dimension;
+
+    for(auto i = 0; i < 4; ++i)
+    {
+        std::getline(file, line);
+    }
+
+    std::stringstream lineStream(line);
+    lineStream >> dimensionString;
+
+    int dimension = 0;
+
+    if(dimensionString == "DIMENSION:")
+    {
+        lineStream >> dimension;
+    }
+    else if(dimensionString == "DIMENSION")
+    {
+        lineStream >> dimensionString;
+        lineStream >> dimension;
+    }
+
     citiesMatrix.resize(dimension);
+
+    for(auto i = 0; i < 3; ++i)
+    {
+        std::getline(file, line);
+    }
+
     for (int i = 0; i < dimension; ++i)
     {
         for (int j = 0; j < dimension; ++j)
@@ -160,20 +188,49 @@ bool Parser::loadCitiesMatrix(const std::string& filename)
             citiesMatrix[i].push_back(std::stoi(line));
         }
     }
+
     return true;
 }
 
 bool Parser::loadLowerDiagonalRow(const std::string & filename)
 {
-    int dimension = 0;
     std::ifstream file(filename);
+
     if (!file.is_open())
     {
         throw std::runtime_error("Can't open file");
     }
+
+    std::string dimensionString;
     std::string line;
-    file >> dimension;
+
+    for(auto i = 0; i < 4; ++i)
+    {
+        std::getline(file, line);
+    }
+
+    std::stringstream lineStream(line);
+    lineStream >> dimensionString;
+
+    int dimension = 0;
+
+    if(dimensionString == "DIMENSION:")
+    {
+        lineStream >> dimension;
+    }
+    else if(dimensionString == "DIMENSION")
+    {
+        lineStream >> dimensionString;
+        lineStream >> dimension;
+    }
+
+    for(auto i = 0; i < 3; ++i)
+    {
+        std::getline(file, line);
+    }
+
     citiesMatrix.resize(dimension);
+
     for (int i = 0; i < dimension; ++i)
     {
         for (int j = 0; j < (i + 1); ++j)

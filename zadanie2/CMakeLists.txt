@@ -10,9 +10,9 @@ set(INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 
 set(SOURCES
-        ${SOURCE_DIR}/Instance.cpp
         ${SOURCE_DIR}/Parser.cpp
         ${SOURCE_DIR}/TabuSearch.cpp
+        ${SOURCE_DIR}/Move.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -20,9 +20,9 @@ set(EXEC_ONLY_SRCS
 )
 
 set(INCLUDES
-        ${INCLUDE_DIR}/Instance.hpp
         ${INCLUDE_DIR}/Parser.hpp
         ${INCLUDE_DIR}/TabuSearch.hpp
+        ${INCLUDE_DIR}/Move.hpp
 )
 
 set(INTERFACES

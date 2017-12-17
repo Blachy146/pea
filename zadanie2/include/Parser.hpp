@@ -11,14 +11,13 @@ public:
     Parser();
 
     void tryToLoadFromFile(const std::string& filePath);
-    std::vector<std::vector<int>> getCitiesMatrix() const;
+    std::vector<std::vector<int>> getDistancesMatrix() const;
 
     ~Parser();
 private:
-    bool loadCitiesList(const std::string& filename);
+    bool loadCitiesEuclideanList(const std::string& filename);
     bool loadCitiesMatrix(const std::string& filename);
     bool loadLowerDiagonalRow(const std::string& filename);
-
     void convertToMatrix();
 
     std::list<std::tuple<int, int, int> > citiesList;
