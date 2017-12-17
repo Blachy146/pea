@@ -13,6 +13,7 @@ set(SOURCES
         ${SOURCE_DIR}/Parser.cpp
         ${SOURCE_DIR}/TabuSearch.cpp
         ${SOURCE_DIR}/Move.cpp
+        ${SOURCE_DIR}/RandomGenerator.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -23,6 +24,7 @@ set(INCLUDES
         ${INCLUDE_DIR}/Parser.hpp
         ${INCLUDE_DIR}/TabuSearch.hpp
         ${INCLUDE_DIR}/Move.hpp
+        ${INCLUDE_DIR}/RandomGenerator.hpp
 )
 
 set(INTERFACES

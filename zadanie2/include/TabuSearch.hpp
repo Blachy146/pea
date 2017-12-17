@@ -23,13 +23,19 @@ private:
     int calculateNeighborhoodSize() const;
     void verifyTabuList(std::list<TabuMove>& tabuList);
     Move findBestMove(const std::vector<Move>& neighborhood, std::list<TabuMove>& tabuList);
-    void changeTenure(std::list<TabuMove>& tabuList, float val);
+    std::vector<int> generateRandomSolution() const;
+    void setDivirsificationMaxCount(int maxCount);
+    void setDivirsification(bool divers);
+    void setTabuTenure(int tenure);
+    void setTabuSize(int size);
 
     Parser parser;
     std::vector<std::vector<int>> distances;
     std::vector<int> bestPath; 
     int bestDistance;
     double executeTimeSeconds;
+    bool diversification;
+    int diversificationMaxCount;
     int counter;
     int tabuSize;
     int tabuTenure;

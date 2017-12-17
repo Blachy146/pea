@@ -1,5 +1,7 @@
 #include "TabuSearch.hpp"
 #include "Move.hpp"
+#include "RandomGenerator.hpp"
+#include <unordered_set>
 
 #include <iostream>
 #include <vector>
@@ -15,8 +17,8 @@ void TabuSearch::tabuSearch()
 {
     std::cout << "Distance before = " << bestDistance << "\n";
 
-    int tabuSize = bestPath.size();
-    int tabuTenure = bestPath.size();
+    int tabuSize = bestPath.size() * 3;
+    int tabuTenure = bestPath.size() * 3;
     int neighborhoodSize = calculateNeighborhoodSize();
     Move bestMove;
 
@@ -31,8 +33,6 @@ void TabuSearch::tabuSearch()
     {
         auto startTimePoint = std::chrono::steady_clock::now();
 
-        verifyTabuList(tabuList);
-
         auto k = 0;
         for(auto i = 1; i < bestPath.size()-1; ++i)
         {
@@ -45,6 +45,8 @@ void TabuSearch::tabuSearch()
                     ++k;
             }
         }
+
+        verifyTabuList(tabuList);
 
         bestMove = findBestMove(neighborhood, tabuList);
         std::swap(currentPath[bestMove.cityFrom], currentPath[bestMove.cityTo]);
@@ -63,11 +65,11 @@ void TabuSearch::tabuSearch()
             *it = TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure };
         }
 
-        if (counter == 10)
+        if(counter == 100)
         {
-            counter = 0;
-            changeTenure(tabuList, 0.5f);
-            tabuTenure /= 2;
+            currentPath = generateRandomSolution();
+            counter == 0;
+            currentCost = calculatePathDistance(currentPath);
         }
 
         ++counter;
@@ -77,6 +79,35 @@ void TabuSearch::tabuSearch()
         executeTimeSeconds -= duration.count();
     }
     std::cout << "Distance after = " << bestDistance << "\n";
+}
+
+std::vector<int> TabuSearch::generateRandomSolution() const 
+{
+    RandomGenerator generator(1, bestPath.size()-2);
+    std::vector<int> path;
+    std::unordered_set<int> cities;
+    path.push_back(0);
+
+    while(cities.size() < bestPath.size() - 2)
+    {
+        cities.insert(generator());
+    }
+
+    for(auto city : cities)
+    {
+        path.push_back(city);
+    }
+
+    path.push_back(path[0]);
+
+    std::cout << "Path: ";
+    for(auto city : path)
+    {
+        std::cout << city << " ";
+    }
+    std::cout << "\n";
+
+    return path;
 }
 
 Move TabuSearch::findBestMove(const std::vector<Move>& neighborhood, std::list<TabuMove>& tabuList)
@@ -96,8 +127,6 @@ Move TabuSearch::findBestMove(const std::vector<Move>& neighborhood, std::list<T
             {
                 tabuTenure = bestPath.size();
             }
-            tabuTenure *= 2;
-            changeTenure(tabuList, 2.0f);
             continue;
         }
         if (cost > it->cost)
@@ -112,14 +141,6 @@ Move TabuSearch::findBestMove(const std::vector<Move>& neighborhood, std::list<T
     }
 
     return *position;
-}
-
-void TabuSearch::changeTenure(std::list<TabuMove>& tabuList, float val)
-{
-    for (auto it = tabuList.begin(); it != tabuList.end(); ++it)
-    {
-        it->tenure *= val;
-    }
 }
 
 void TabuSearch::verifyTabuList(std::list<TabuMove>& tabuList)
@@ -236,6 +257,26 @@ void TabuSearch::tryToLoadFromFile(const std::string& filePath)
     counter = 0;
     tabuSize = 0;
     tabuTenure = 0;
+}
+
+void TabuSearch::setDivirsificationMaxCount(int maxCount)
+{
+    diversificationMaxCount = maxCount;
+}
+
+void TabuSearch::setDivirsification(bool diver)
+{
+    diversification = diver;
+}
+
+void TabuSearch::setTabuSize(int size)
+{
+    tabuSize = size;
+}
+
+void TabuSearch::setTabuTenure(int tenure)
+{
+    tabuTenure = tenure;
 }
 
 TabuSearch::~TabuSearch()

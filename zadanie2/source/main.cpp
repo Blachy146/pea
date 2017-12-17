@@ -14,6 +14,6 @@ int main()
     std::cin >> filePath;
 
     tabuSearch.tryToLoadFromFile(filePath);
-    tabuSearch.setExecuteTime(20.0);
+    tabuSearch.setExecuteTime(5.0);
     tabuSearch.tabuSearch();
 }
