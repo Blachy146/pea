@@ -11,7 +11,7 @@ class TabuSearch
 public:
     TabuSearch();
 
-    void tabuSearch();
+    int tabuSearch();
     void setExecuteTime(double time);
     void printDistancesMatrix() const;
     void tryToLoadFromFile(const std::string& filePath);

@@ -67,8 +67,43 @@ void makeMeasurments()
                                            "/home/bmalecki/Downloads/pr439.tsp/data",
                                            "/home/bmalecki/Downloads/pr1002.tsp/data"};
 
-    std::vector<double> executeTimes = {0.001, 0.01, 0.1, 1.0, };
+    std::vector<int> asymResults {39, 2755, 2465}; 
+    std::vector<int> symResults {2085, 107217, 259045};
+    std::vector<int> asymSizes {17, 170, 403}; 
+    std::vector<int> symSizes {17, 439, 1002};
+    std::vector<double> executeTimes = {0.001, 0.01, 0.1, 1.0, 10.0, 20.0};
+    std::vector<bool> falseTrue {false, true};
+    std::vector<double> tabuSizeMultiplies {0.1, 1.0, 3.0, 10.0};
+    std::vector<double> tabuTenureMultiplies {0.1, 1.0, 3.0, 10.0};
+    std::vector<double> diverCounts {10, 100, 1000};
 
+    for(auto i = 0; i < dataFileAsym.size(); ++i)
+    {
+        ts->tryToLoadFromFile(dataFileAsym[i]);
+        ts->setDiversificationMaxCount(asymSizes[i]*8);
+        ts->setTabuTenure(asymSizes[i]*3);
+
+        for(auto time : executeTimes)
+        {
+            ts->setExecuteTime(time);
+
+            for(auto divers : falseTrue)
+            {
+                ts->setDiversification(divers);
+
+                for(auto sizeMul : tabuSizeMultiplies)
+                {
+                    ts->setTabuSize((int)(asymSizes[i]*sizeMul));
+                    std::cout << "-----------Asym--------------------------------\n";
+                    std::cout << "instance: " << asymSizes[i] << " | time: " << time << " | divers: " << divers << " | tabuSize: " << (int)(asymSizes[i]*sizeMul) << "\n";
+                    auto result = ts->tabuSearch();
+                    double percentage = ((result - asymResults[i]) / (double)asymResults[i]) * 100.0;
+                    std::cout << "Result: " << percentage << " %\n"; 
+                    std::cout << "-------------------------------------------\n";
+                }
+            }
+        }
+    }
 }
 
 int main()

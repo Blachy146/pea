@@ -13,7 +13,7 @@ TabuSearch::TabuSearch()
 {
 }
 
-void TabuSearch::tabuSearch()
+int TabuSearch::tabuSearch()
 {
     int neighborhoodSize = calculateNeighborhoodSize();
     double time = executeTimeSeconds;
@@ -91,10 +91,14 @@ void TabuSearch::tabuSearch()
     std::cout << "Reset after " <<  diversificationMaxCount << "\n";
     std::cout << "Distance = " << bestDistance << "\n";
 
+    int dist = bestDistance;
+
     bestPath = calculateGreedy();
     bestDistance = calculatePathDistance(bestPath);
     tabuSize = tabuSizeVal;
     tabuTenure = tabuTenureVal;
+
+    return dist;
 }
 
 std::vector<int> TabuSearch::generateRandomSolution() const 
