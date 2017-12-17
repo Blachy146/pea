@@ -64,10 +64,10 @@ void TabuSearch::tabuSearch()
             *it = TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure };
         }
 
-        if(counter == diversificationMaxCount || diversification)
+        if(counter == diversificationMaxCount && diversification)
         {
             currentPath = generateRandomSolution();
-            counter == 0;
+            counter = 0;
             currentCost = calculatePathDistance(currentPath);
         }
 
@@ -247,6 +247,10 @@ void TabuSearch::printDistancesMatrix() const
 
 void TabuSearch::tryToLoadFromFile(const std::string& filePath)
 {
+    distances = {};
+    bestPath = {};
+    bestDistance = 0;
+
     try
     {
         parser.tryToLoadFromFile(filePath);

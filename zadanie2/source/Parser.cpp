@@ -12,6 +12,8 @@ Parser::Parser()
 
 void Parser::tryToLoadFromFile(const std::string& filePath)
 {
+    citiesList = {};
+    citiesMatrix = {};
     std::ifstream ifs(filePath);
 
     if(!ifs.is_open())

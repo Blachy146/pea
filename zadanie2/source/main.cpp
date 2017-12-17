@@ -16,6 +16,7 @@ void printMenu()
     std::cout << "5. Ustaw maksymalna liczbe iteracji bez resetowania\n";
     std::cout << "6. Ustaw kadencje\n";
     std::cout << "7. Uruchom\n"; 
+    std::cout << "8. Pomiary\n"; 
     std::cout << "0. Koniec\n";
 }
 
@@ -52,6 +53,22 @@ std::string getFileName()
     std::cin >> file;
 
     return file;
+}
+
+void makeMeasurments()
+{
+    auto ts = std::make_unique<TabuSearch>(); 
+
+    std::vector<std::string> dataFileAsym {"/home/bmalecki/Downloads/br17.atsp/data",
+                                           "/home/bmalecki/Downloads/ftv170.atsp/data",
+                                           "/home/bmalecki/Downloads/rbg403.atsp/data"};
+
+    std::vector<std::string> dataFileSym {"/home/bmalecki/Downloads/gr17.tsp/data",
+                                           "/home/bmalecki/Downloads/pr439.tsp/data",
+                                           "/home/bmalecki/Downloads/pr1002.tsp/data"};
+
+    std::vector<double> executeTimes = {0.001, 0.01, 0.1, 1.0, };
+
 }
 
 int main()
@@ -114,6 +131,11 @@ int main()
         case 7:
         {
             ts->tabuSearch();
+            break;
+        }
+        case 8:
+        {
+            makeMeasurments();
             break;
         }
         case 0:
