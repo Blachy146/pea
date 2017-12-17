@@ -15,11 +15,10 @@ TabuSearch::TabuSearch()
 
 void TabuSearch::tabuSearch()
 {
-    std::cout << "Distance before = " << bestDistance << "\n";
-
-    int tabuSize = bestPath.size() * 3;
-    int tabuTenure = bestPath.size() * 3;
     int neighborhoodSize = calculateNeighborhoodSize();
+    double time = executeTimeSeconds;
+    int tabuSizeVal = tabuSize;
+    int tabuTenureVal = tabuTenure;
     Move bestMove;
 
     std::vector<int> currentPath = bestPath;
@@ -29,7 +28,7 @@ void TabuSearch::tabuSearch()
     int currentCost = bestDistance;
     int workingCost = bestDistance;
 
-    while(executeTimeSeconds > 0.0)
+    while(time > 0.0)
     {
         auto startTimePoint = std::chrono::steady_clock::now();
 
@@ -65,7 +64,7 @@ void TabuSearch::tabuSearch()
             *it = TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure };
         }
 
-        if(counter == 100)
+        if(counter == diversificationMaxCount || diversification)
         {
             currentPath = generateRandomSolution();
             counter == 0;
@@ -76,9 +75,26 @@ void TabuSearch::tabuSearch()
 
         auto endTimePoint = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration<double, std::ratio<1,1>>(endTimePoint - startTimePoint);
-        executeTimeSeconds -= duration.count();
+        time -= duration.count();
     }
-    std::cout << "Distance after = " << bestDistance << "\n";
+
+    if(diversification)
+    {
+        std::cout << "Diversification = true\n";
+    }    
+    else
+    {
+        std::cout << "Diversification = false\n";
+    }
+    std::cout << "Tabu size = " << tabuSize << "\n";
+    std::cout << "Tabu tenure = " << tabuTenure << "\n";
+    std::cout << "Reset after " <<  diversificationMaxCount << "\n";
+    std::cout << "Distance = " << bestDistance << "\n";
+
+    bestPath = calculateGreedy();
+    bestDistance = calculatePathDistance(bestPath);
+    tabuSize = tabuSizeVal;
+    tabuTenure = tabuTenureVal;
 }
 
 std::vector<int> TabuSearch::generateRandomSolution() const 
@@ -100,13 +116,6 @@ std::vector<int> TabuSearch::generateRandomSolution() const
 
     path.push_back(path[0]);
 
-    std::cout << "Path: ";
-    for(auto city : path)
-    {
-        std::cout << city << " ";
-    }
-    std::cout << "\n";
-
     return path;
 }
 
@@ -123,10 +132,6 @@ Move TabuSearch::findBestMove(const std::vector<Move>& neighborhood, std::list<T
             cost = it->cost;
             position = it;
             counter = 0;
-            if (tabuTenure == 0)
-            {
-                tabuTenure = bestPath.size();
-            }
             continue;
         }
         if (cost > it->cost)
@@ -255,16 +260,14 @@ void TabuSearch::tryToLoadFromFile(const std::string& filePath)
     bestPath = calculateGreedy();
     bestDistance = calculatePathDistance(bestPath);
     counter = 0;
-    tabuSize = 0;
-    tabuTenure = 0;
 }
 
-void TabuSearch::setDivirsificationMaxCount(int maxCount)
+void TabuSearch::setDiversificationMaxCount(int maxCount)
 {
     diversificationMaxCount = maxCount;
 }
 
-void TabuSearch::setDivirsification(bool diver)
+void TabuSearch::setDiversification(bool diver)
 {
     diversification = diver;
 }

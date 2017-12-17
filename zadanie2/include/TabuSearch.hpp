@@ -15,6 +15,10 @@ public:
     void setExecuteTime(double time);
     void printDistancesMatrix() const;
     void tryToLoadFromFile(const std::string& filePath);
+    void setDiversificationMaxCount(int maxCount);
+    void setDiversification(bool divers);
+    void setTabuTenure(int tenure);
+    void setTabuSize(int size);
 
     ~TabuSearch();
 private:
@@ -24,10 +28,6 @@ private:
     void verifyTabuList(std::list<TabuMove>& tabuList);
     Move findBestMove(const std::vector<Move>& neighborhood, std::list<TabuMove>& tabuList);
     std::vector<int> generateRandomSolution() const;
-    void setDivirsificationMaxCount(int maxCount);
-    void setDivirsification(bool divers);
-    void setTabuTenure(int tenure);
-    void setTabuSize(int size);
 
     Parser parser;
     std::vector<std::vector<int>> distances;
