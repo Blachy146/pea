@@ -81,7 +81,8 @@ void makeMeasurments()
     {
         ts->tryToLoadFromFile(dataFileAsym[i]);
         ts->setDiversificationMaxCount(asymSizes[i]*8);
-        ts->setTabuTenure(asymSizes[i]*3);
+        ts->setTabuTenure((int)(asymSizes[i]*3));
+        ts->setTabuSize((int)(asymSizes[i]*3));
 
         for(auto time : executeTimes)
         {
@@ -91,16 +92,35 @@ void makeMeasurments()
             {
                 ts->setDiversification(divers);
 
-                for(auto sizeMul : tabuSizeMultiplies)
-                {
-                    ts->setTabuSize((int)(asymSizes[i]*sizeMul));
-                    std::cout << "-----------Asym--------------------------------\n";
-                    std::cout << "instance: " << asymSizes[i] << " | time: " << time << " | divers: " << divers << " | tabuSize: " << (int)(asymSizes[i]*sizeMul) << "\n";
-                    auto result = ts->tabuSearch();
-                    double percentage = ((result - asymResults[i]) / (double)asymResults[i]) * 100.0;
-                    std::cout << "Result: " << percentage << " %\n"; 
-                    std::cout << "-------------------------------------------\n";
-                }
+                auto result = ts->tabuSearch();
+                double percentage = ((result - asymResults[i]) / (double)asymResults[i]) * 100.0;
+                std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Diversification" << ";" << "\n";
+                std::cout << asymSizes[i] << ";" << time << ";" << percentage << ";" << divers << ";" << "\n"; 
+            }
+        }
+    }
+
+    ts = std::make_unique<TabuSearch>(); 
+
+    for(auto i = 0; i < dataFileSym.size(); ++i)
+    {
+        ts->tryToLoadFromFile(dataFileSym[i]);
+        ts->setDiversificationMaxCount(symSizes[i]*8);
+        ts->setTabuTenure((int)(symSizes[i]*3));
+        ts->setTabuSize((int)(symSizes[i]*3));
+
+        for(auto time : executeTimes)
+        {
+            ts->setExecuteTime(time);
+
+            for(auto divers : falseTrue)
+            {
+                ts->setDiversification(divers);
+
+                auto result = ts->tabuSearch();
+                double percentage = ((result - symResults[i]) / (double)symResults[i]) * 100.0;
+                std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Diversification" << ";" << "\n";
+                std::cout << symSizes[i] << ";" << time << ";" << percentage << ";" << divers << ";" << "\n"; 
             }
         }
     }
@@ -114,7 +134,7 @@ int main()
     while(!endProgram)
     {
         printMenu();
-        int option = getOption();
+        int option = 8;//getOption();
 
         switch(option)
         {
@@ -171,6 +191,7 @@ int main()
         case 8:
         {
             makeMeasurments();
+            endProgram = true;
             break;
         }
         case 0:
