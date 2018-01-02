@@ -26,7 +26,7 @@ int TabuSearch::tabuSearch()
     std::list<TabuMove> tabuList;
 
     int currentCost = bestDistance;
-    int workingCost = bestDistance;
+    int tempCost = bestDistance;
 
     while(time > 0.0)
     {
@@ -37,10 +37,10 @@ int TabuSearch::tabuSearch()
         {
             for(auto j = i+1; j < bestPath.size()-1; ++j)
             {
-                    std::vector<int> workingPath = currentPath;
-                    std::swap(workingPath[i], workingPath[j]);
-                    workingCost = calculatePathDistance(workingPath); 
-                    neighborhood[k] = {workingCost, i, j};
+                    std::vector<int> tempPath = currentPath;
+                    std::swap(tempPath[i], tempPath[j]);
+                    tempCost = calculatePathDistance(tempPath); 
+                    neighborhood[k] = {tempCost, i, j};
                     ++k;
             }
         }
@@ -48,20 +48,24 @@ int TabuSearch::tabuSearch()
         verifyTabuList(tabuList);
 
         bestMove = findBestMove(neighborhood, tabuList);
-        std::swap(currentPath[bestMove.cityFrom], currentPath[bestMove.cityTo]);
-        currentCost = bestMove.cost;
+        if(bestMove.cityFrom != 0 and bestMove.cityTo != 0 and bestMove.cost != 0)
+        {
+            std::swap(currentPath[bestMove.cityFrom], currentPath[bestMove.cityTo]);
+            currentCost = bestMove.cost;
 
-        if (tabuList.size() < tabuSize)
-        {
-            tabuList.push_back(TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure });
-        }
-        else
-        {
-            auto it = std::min_element(tabuList.begin(), tabuList.end(), [](const auto& e1, const auto& e2) 
-                                                                        {
-                                                                            return (e1.tenure < e2.tenure);
-                                                                        });
-            *it = TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure };
+            if (tabuList.size() < tabuSize)
+            {
+                tabuList.push_back(TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure });
+            }
+            else
+            {
+                auto minElemPos = std::min_element(tabuList.begin(), tabuList.end(), [](const auto& elem1, const auto& elem2) 
+                                                                            {
+                                                                                return (elem1.tenure < elem2.tenure);
+                                                                            });
+
+                *minElemPos = TabuMove { std::make_pair(bestMove.cityTo, bestMove.cityFrom), tabuTenure };
+            }
         }
 
         if(counter == diversificationMaxCount && diversification)
@@ -126,27 +130,25 @@ std::vector<int> TabuSearch::generateRandomSolution() const
 Move TabuSearch::findBestMove(const std::vector<Move>& neighborhood, std::list<TabuMove>& tabuList)
 {
     int cost = std::numeric_limits<int>::max();
+    int prevBest = bestDistance;
     std::pair<int, int> move;
     auto position = neighborhood.begin();
-    for (auto it = neighborhood.begin(); it != neighborhood.end(); ++it)
+
+    for (auto minElemPos = neighborhood.begin(); minElemPos != neighborhood.end(); ++minElemPos)
     {
-        if (bestDistance > it->cost)
+        if (bestDistance > minElemPos->cost)
         {
-            bestDistance = it->cost;
-            cost = it->cost;
-            position = it;
+            bestDistance = minElemPos->cost;
+            cost = minElemPos->cost;
+            position = minElemPos;
             counter = 0;
             continue;
         }
-        if (cost > it->cost)
-        {
-            move = std::make_pair(it->cityTo, it->cityFrom);
-            if (std::find_if(tabuList.begin(), tabuList.end(), [&move](const TabuMove& e) { return e.move == move; }) == tabuList.end())
-            {
-                cost = it->cost;
-                position = it;
-            }
-        }
+    }
+
+    if(prevBest == bestDistance)
+    {
+        return Move{0,0,0};
     }
 
     return *position;

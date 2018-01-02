@@ -134,7 +134,7 @@ int main()
     while(!endProgram)
     {
         printMenu();
-        int option = 8;//getOption();
+        int option = getOption();
 
         switch(option)
         {
