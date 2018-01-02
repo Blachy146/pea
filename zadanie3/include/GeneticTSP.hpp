@@ -15,10 +15,13 @@ public:
 
     ~GeneticTSP();
 private:
+    std::vector<std::vector<int>> generateRandomPopulation(int numberOfSolutions) const;
+
     int calculationTime;
     int populationSize;
     double mutationRate;
     double crossoverRate;
+
     Parser parser;
     std::vector<std::vector<int>> distances;
 };

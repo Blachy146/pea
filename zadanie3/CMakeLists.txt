@@ -12,6 +12,7 @@ set(INTERFACE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/interface)
 set(SOURCES
         ${SOURCE_DIR}/Parser.cpp
         ${SOURCE_DIR}/GeneticTSP.cpp
+        ${SOURCE_DIR}/RandomGenerator.cpp
 )
 
 set(EXEC_ONLY_SRCS
@@ -21,6 +22,7 @@ set(EXEC_ONLY_SRCS
 set(INCLUDES
         ${INCLUDE_DIR}/Parser.hpp
         ${INCLUDE_DIR}/GeneticTSP.hpp
+        ${INCLUDE_DIR}/RandomGenerator.hpp
 )
 
 set(INTERFACES

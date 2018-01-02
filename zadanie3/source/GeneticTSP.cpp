@@ -1,6 +1,8 @@
 #include "GeneticTSP.hpp"
 #include "Parser.hpp"
+#include "RandomGenerator.hpp"
 
+#include <unordered_set>
 #include <stdexcept>
 
 
@@ -13,18 +15,30 @@ void GeneticTSP::geneticAlgorithm()
 
 }
 
-void GeneticTSP::tryToLoadFromFile(const std::string& filePath)
+std::vector<std::vector<int>> GeneticTSP::generateRandomPopulation(int numberOfSolutions) const 
 {
-    try
+    RandomGenerator generator(1, distances.size()-1);
+    std::vector<std::vector<int>> randomPopulation;
+    std::unordered_set<int> cities;
+
+    for(auto i = 0; i < numberOfSolutions; ++i)
     {
-        parser.tryToLoadFromFile(filePath);
-    }
-    catch(const std::runtime_error& e)
-    {
-        throw e;
+
     }
 
-    distances = parser.getDistancesMatrix();
+    while(cities.size() < bestPath.size() - 2)
+    {
+        cities.insert(generator());
+    }
+
+    for(auto city : cities)
+    {
+        path.push_back(city);
+    }
+
+    path.push_back(path[0]);
+
+    return path;
 }
 
 GeneticTSP::~GeneticTSP()
