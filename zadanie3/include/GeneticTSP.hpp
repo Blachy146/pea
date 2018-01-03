@@ -12,6 +12,8 @@ public:
 
     void geneticAlgorithm();
     void tryToLoadFromFile(const std::string& filePath);
+    void printDistancesMatrix() const;
+    void setPupulationSize(int size);
 
     ~GeneticTSP();
 private:

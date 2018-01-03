@@ -12,8 +12,6 @@ Parser::Parser()
 
 void Parser::tryToLoadFromFile(const std::string& filePath)
 {
-    euclideanList = {};
-    distancesMatrix = {};
     std::ifstream ifs(filePath);
 
     if(!ifs.is_open())
