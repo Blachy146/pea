@@ -23,6 +23,7 @@ set(INCLUDES
         ${INCLUDE_DIR}/Parser.hpp
         ${INCLUDE_DIR}/GeneticTSP.hpp
         ${INCLUDE_DIR}/RandomGenerator.hpp
+        ${INCLUDE_DIR}/Solution.hpp
 )
 
 set(INTERFACES
