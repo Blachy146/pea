@@ -1,17 +1,32 @@
 #include "RandomGenerator.hpp"
 
 
-RandomGenerator::RandomGenerator(int lowerBound, int upperBound)
+RandomIntGenerator::RandomIntGenerator(int lowerBound, int upperBound)
     : engine(std::random_device{}()), distribution(lowerBound, upperBound)
 {
-
 }
 
-int RandomGenerator::operator()()
+int RandomIntGenerator::operator()()
 {
     return distribution(engine);
 }
 
-RandomGenerator::~RandomGenerator()
+RandomIntGenerator::~RandomIntGenerator()
+{
+}
+
+
+
+RandomDoubleGenerator::RandomDoubleGenerator(double lowerBound, double upperBound)
+    : engine(std::random_device{}()), distribution(lowerBound, upperBound)
+{
+}
+
+double RandomDoubleGenerator::operator()()
+{
+    return distribution(engine);
+}
+
+RandomDoubleGenerator::~RandomDoubleGenerator()
 {
 }
