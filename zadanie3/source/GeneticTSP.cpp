@@ -12,7 +12,8 @@
 
 
 GeneticTSP::GeneticTSP()
-    : calculationTime(0), populationSize(0), mutationRate(0.0), crossoverRate(0.0)
+    : calculationTime(0), populationSize(0), mutationRate(0.0), 
+      crossoverRate(0.0), mutationType(MutationType::Transposition)
 {
 }
 
@@ -63,7 +64,17 @@ void GeneticTSP::geneticAlgorithm()
 
             if(mutationRandomRate < mutationRate)
             {
-                newPopulation.insert(mutateInversion(survivors));
+                switch(mutationType)
+                {
+                case MutationType::Inversion:
+                    newPopulation.insert(mutateInversion(survivors));
+                    break;
+                case MutationType::Transposition:
+                    newPopulation.insert(mutateTransposition(survivors));
+                    break;
+                default:
+                    break;
+                }
             }
 
             for(auto elem : newPopulation)
@@ -92,7 +103,12 @@ void GeneticTSP::geneticAlgorithm()
     }
 }
 
-Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions)
+std::pair<Solution, Solution> GeneticTSP::crossoverOnePoint(const std::set<Solution>& solutions) const
+{
+
+}
+
+Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions) const
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
     RandomIntGenerator randomCityGenerator(1, distances.size()-1);
@@ -114,7 +130,7 @@ Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions)
     return std::move(solutionToMutate);
 }
 
-Solution GeneticTSP::mutateInversion(const std::set<Solution>& solutions)
+Solution GeneticTSP::mutateInversion(const std::set<Solution>& solutions) const
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
     RandomIntGenerator randomCityGenerator(1, distances.size()-1);
@@ -238,6 +254,11 @@ void GeneticTSP::setCrossoverRate(double rate)
 void GeneticTSP::setSurvivalRate(double rate)
 {
     survivalRate = rate;
+}
+
+void GeneticTSP::setMutationType(const MutationType& type)
+{
+    mutationType = type;
 }
 
 GeneticTSP::~GeneticTSP()

@@ -7,6 +7,13 @@
 #include <set>
 
 
+enum class MutationType
+{
+    Transposition,
+    Inversion
+};
+
+
 class GeneticTSP
 {
 public:
@@ -20,19 +27,22 @@ public:
     void setMutationRate(double rate);
     void setCrossoverRate(double rate);
     void setSurvivalRate(double rate);
+    void setMutationType(const MutationType& type);
 
     ~GeneticTSP();
 private:
     std::vector<Solution> generateRandomPopulation(int numberOfSolutions) const;
     int calculatePathDistance(const std::vector<int>& path) const;
-    Solution mutateTransposition(const std::set<Solution>& solutions);
-    Solution mutateInversion(const std::set<Solution>& solutions);
+    Solution mutateTransposition(const std::set<Solution>& solutions) const;
+    Solution mutateInversion(const std::set<Solution>& solutions) const;
+    std::pair<Solution, Solution> crossoverOnePoint(const std::set<Solution>& solutions) const;
 
     double calculationTime;
     int populationSize;
     double mutationRate;
     double crossoverRate;
     double survivalRate;
+    MutationType mutationType;
 
     Parser parser;
     std::vector<std::vector<int>> distances;
