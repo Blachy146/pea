@@ -25,7 +25,8 @@ public:
 private:
     std::vector<Solution> generateRandomPopulation(int numberOfSolutions) const;
     int calculatePathDistance(const std::vector<int>& path) const;
-    void mutateTransposition(std::set<Solution>& solutions);
+    Solution mutateTransposition(const std::set<Solution>& solutions);
+    Solution mutateInversion(const std::set<Solution>& solutions);
 
     double calculationTime;
     int populationSize;

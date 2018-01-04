@@ -35,22 +35,23 @@ void GeneticTSP::geneticAlgorithm()
     {
         auto startTimePoint = std::chrono::steady_clock::now();
 
-        std::set<Solution> newBestSolutions;
+        std::set<Solution> survivors;
         auto solutionPos = bestSolutions.begin();
 
         for(auto i = 0; i < numberOfSurvivors; ++i)
         {
-            newBestSolutions.insert(*solutionPos);
+            survivors.insert(*solutionPos);
             ++solutionPos;
         }
 
+        auto newPopulation = survivors;
         RandomDoubleGenerator randomZeroOneGenerator(0.0, 1.0);
 
-        while(newBestSolutions.size() < populationSize)
+        while(newPopulation.size() < populationSize)
         {
             auto mutationRandomRate = randomZeroOneGenerator();
 
-            for(auto elem : newBestSolutions)
+            for(auto elem : survivors)
             {
                 for(auto e : elem.path)
                 {
@@ -62,10 +63,10 @@ void GeneticTSP::geneticAlgorithm()
 
             if(mutationRandomRate < mutationRate)
             {
-                mutateTransposition(newBestSolutions);
+                newPopulation.insert(mutateInversion(survivors));
             }
 
-            for(auto elem : newBestSolutions)
+            for(auto elem : newPopulation)
             {
                 for(auto e : elem.path)
                 {
@@ -74,9 +75,16 @@ void GeneticTSP::geneticAlgorithm()
                 std::cout << "\n";
             }
             std::cout << "--------After mut end------------\n";
+
+            auto crossoverRandomRate = randomZeroOneGenerator();
+
+            if(crossoverRandomRate < crossoverRate)
+            {
+
+            }
         }
 
-        bestSolutions = newBestSolutions;
+        bestSolutions = survivors;
 
         auto endTimePoint = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration<double, std::ratio<1,1>>(endTimePoint - startTimePoint);
@@ -84,7 +92,7 @@ void GeneticTSP::geneticAlgorithm()
     }
 }
 
-void GeneticTSP::mutateTransposition(std::set<Solution>& solutions)
+Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions)
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
     RandomIntGenerator randomCityGenerator(1, distances.size()-1);
@@ -100,11 +108,40 @@ void GeneticTSP::mutateTransposition(std::set<Solution>& solutions)
 
     auto solutionToMutate = *solutionPos;
 
-    solutions.erase(solutionPos);
     std::swap(solutionToMutate.path[city1], solutionToMutate.path[city2]);
     solutionToMutate.distance = calculatePathDistance(solutionToMutate.path);
+    
+    return std::move(solutionToMutate);
+}
 
-    solutions.insert(solutionToMutate);
+Solution GeneticTSP::mutateInversion(const std::set<Solution>& solutions)
+{
+    RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
+    RandomIntGenerator randomCityGenerator(1, distances.size()-1);
+    auto solutionPosIncrement = randomSolutionGenerator();
+    auto solutionPos = solutions.begin();
+    auto city1 = randomCityGenerator();
+    auto city2 = randomCityGenerator();
+
+    if(city1 > city2)
+    {
+        std::swap(city1, city2);
+    }
+
+    for(auto i = 0; i < solutionPosIncrement; ++i)
+    {
+        ++solutionPos;
+    }
+
+    auto solutionToMutate = *solutionPos;
+
+    if(city1 != city2)
+    {
+        std::reverse(solutionToMutate.path.begin() + city1, solutionToMutate.path.begin() + city2);
+        solutionToMutate.distance = calculatePathDistance(solutionToMutate.path);
+    }
+
+    return std::move(solutionToMutate);
 }
 
 std::vector<Solution> GeneticTSP::generateRandomPopulation(int numberOfSolutions) const 
