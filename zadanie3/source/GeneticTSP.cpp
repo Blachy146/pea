@@ -23,26 +23,20 @@ void GeneticTSP::geneticAlgorithm()
     auto numberOfSurvivors = static_cast<int>(populationSize * survivalRate);
     double time = calculationTime;
 
-    std::set<Solution> sortedStartPopulation;
+    std::sort(startPopulation.begin(), startPopulation.end());
 
-    for(auto solution : startPopulation)
-    {
-        sortedStartPopulation.insert(solution);
-    }
-
-    std::set<Solution> bestSolutions = sortedStartPopulation;
+    std::vector<Solution> population = startPopulation; 
 
     while(time > 0.0)
     {
         auto startTimePoint = std::chrono::steady_clock::now();
 
-        std::set<Solution> survivors;
-        auto solutionPos = bestSolutions.begin();
+        std::vector<Solution> survivors;
+        auto solutionPos = population.begin();
 
         for(auto i = 0; i < numberOfSurvivors; ++i)
         {
-            survivors.insert(*solutionPos);
-            ++solutionPos;
+            survivors.push_back(population[i]);
         }
 
         auto newPopulation = survivors;
@@ -52,77 +46,111 @@ void GeneticTSP::geneticAlgorithm()
         {
             auto mutationRandomRate = randomZeroOneGenerator();
 
-            for(auto elem : survivors)
-            {
-                for(auto e : elem.path)
-                {
-                    std::cout << e << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "-------Before mut end-------------\n";
-
             if(mutationRandomRate < mutationRate)
             {
                 switch(mutationType)
                 {
                 case MutationType::Inversion:
-                    newPopulation.insert(mutateInversion(survivors));
+                    newPopulation.push_back(mutateInversion(survivors));
                     break;
                 case MutationType::Transposition:
-                    newPopulation.insert(mutateTransposition(survivors));
+                    newPopulation.push_back(mutateTransposition(survivors));
                     break;
                 default:
                     break;
                 }
             }
 
-            for(auto elem : newPopulation)
-            {
-                for(auto e : elem.path)
-                {
-                    std::cout << e << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "--------After mut end------------\n";
-
             auto crossoverRandomRate = randomZeroOneGenerator();
 
             if(crossoverRandomRate < crossoverRate)
             {
+                for(auto elem : survivors)
+                {
+                    for(auto e : elem.path)
+                    {
+                        std::cout << e << " ";
+                    }
+                    std::cout << "\n";
+                }
+                std::cout << "-------Before cross end-------------\n";
 
+                auto childs = crossoverOnePoint(survivors);
+
+                newPopulation.push_back(childs.first);
+                newPopulation.push_back(childs.second);
+
+                for(auto elem : newPopulation)
+                {
+                    for(auto e : elem.path)
+                    {
+                        std::cout << e << " ";
+                    }
+                    std::cout << "\n";
+                }
+                std::cout << "--------After cross end------------\n";
             }
         }
 
-        bestSolutions = survivors;
+        std::cout << "End while loop\n";
+
+        std::sort(newPopulation.begin(), newPopulation.end());
+        population = newPopulation;
 
         auto endTimePoint = std::chrono::steady_clock::now();
         auto duration = std::chrono::duration<double, std::ratio<1,1>>(endTimePoint - startTimePoint);
         time -= duration.count();
     }
+
+    std::cout << "Best solution: " << population.begin()->distance << "\n";
 }
 
-std::pair<Solution, Solution> GeneticTSP::crossoverOnePoint(const std::set<Solution>& solutions) const
+std::pair<Solution, Solution> GeneticTSP::crossoverOnePoint(const std::vector<Solution>& solutions) const
 {
+    RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
+    RandomIntGenerator randomCityGenerator(1, distances.size()-1);
+    auto solutionPosIncrement1 = randomSolutionGenerator();
+    auto solutionPosIncrement2 = randomSolutionGenerator();
+    auto splitPoint = randomCityGenerator();
 
+    auto solutionToCrossover1 = solutions[solutionPosIncrement1]; 
+    auto solutionToCrossover2 = solutions[solutionPosIncrement2]; 
+
+    std::vector<int> child1;
+    std::vector<int> child2;
+
+    auto splitPointFromEnd = solutionToCrossover1.path.size() - splitPoint;  
+
+    std::copy(solutionToCrossover1.path.begin(), solutionToCrossover1.path.end() - splitPointFromEnd, std::back_inserter(child1));
+    std::copy(solutionToCrossover2.path.begin() + splitPoint, solutionToCrossover2.path.end(), std::back_inserter(child1));
+
+    std::copy(solutionToCrossover2.path.begin(), solutionToCrossover2.path.end() - splitPointFromEnd, std::back_inserter(child2));
+    std::copy(solutionToCrossover1.path.begin() + splitPoint, solutionToCrossover1.path.end(), std::back_inserter(child2));
+
+    std::cout << "Split front/end: " << splitPoint << "/" << splitPointFromEnd << "\n";
+    std::cout << "Split city sol1 front/end: " << *(solutionToCrossover1.path.begin() + splitPoint) << "/" << *(solutionToCrossover1.path.end() - splitPointFromEnd) << "\n";
+    std::cout << "Split city sol2 front/end: " << *(solutionToCrossover2.path.begin() + splitPoint) << "/" << *(solutionToCrossover2.path.end() - splitPointFromEnd) << "\n";
+
+    auto childDistance1 = calculatePathDistance(child1);
+    auto childDistance2 = calculatePathDistance(child2);
+
+    solutionToCrossover1.path = std::move(child1);
+    solutionToCrossover1.distance = childDistance1;
+    solutionToCrossover2.path = std::move(child2);
+    solutionToCrossover2.distance = childDistance2;
+
+    return std::make_pair(solutionToCrossover1, solutionToCrossover2);
 }
 
-Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions) const
+Solution GeneticTSP::mutateTransposition(const std::vector<Solution>& solutions) const
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
     RandomIntGenerator randomCityGenerator(1, distances.size()-1);
     auto solutionPosIncrement = randomSolutionGenerator();
-    auto solutionPos = solutions.begin();
     auto city1 = randomCityGenerator();
     auto city2 = randomCityGenerator();
 
-    for(auto i = 0; i < solutionPosIncrement; ++i)
-    {
-        ++solutionPos;
-    }
-
-    auto solutionToMutate = *solutionPos;
+    auto solutionToMutate = solutions[solutionPosIncrement]; 
 
     std::swap(solutionToMutate.path[city1], solutionToMutate.path[city2]);
     solutionToMutate.distance = calculatePathDistance(solutionToMutate.path);
@@ -130,12 +158,11 @@ Solution GeneticTSP::mutateTransposition(const std::set<Solution>& solutions) co
     return std::move(solutionToMutate);
 }
 
-Solution GeneticTSP::mutateInversion(const std::set<Solution>& solutions) const
+Solution GeneticTSP::mutateInversion(const std::vector<Solution>& solutions) const
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
     RandomIntGenerator randomCityGenerator(1, distances.size()-1);
     auto solutionPosIncrement = randomSolutionGenerator();
-    auto solutionPos = solutions.begin();
     auto city1 = randomCityGenerator();
     auto city2 = randomCityGenerator();
 
@@ -144,12 +171,7 @@ Solution GeneticTSP::mutateInversion(const std::set<Solution>& solutions) const
         std::swap(city1, city2);
     }
 
-    for(auto i = 0; i < solutionPosIncrement; ++i)
-    {
-        ++solutionPos;
-    }
-
-    auto solutionToMutate = *solutionPos;
+    auto solutionToMutate = solutions[solutionPosIncrement];
 
     if(city1 != city2)
     {

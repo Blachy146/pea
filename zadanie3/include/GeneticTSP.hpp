@@ -33,9 +33,9 @@ public:
 private:
     std::vector<Solution> generateRandomPopulation(int numberOfSolutions) const;
     int calculatePathDistance(const std::vector<int>& path) const;
-    Solution mutateTransposition(const std::set<Solution>& solutions) const;
-    Solution mutateInversion(const std::set<Solution>& solutions) const;
-    std::pair<Solution, Solution> crossoverOnePoint(const std::set<Solution>& solutions) const;
+    Solution mutateTransposition(const std::vector<Solution>& solutions) const;
+    Solution mutateInversion(const std::vector<Solution>& solutions) const;
+    std::pair<Solution, Solution> crossoverOnePoint(const std::vector<Solution>& solutions) const;
 
     double calculationTime;
     int populationSize;
