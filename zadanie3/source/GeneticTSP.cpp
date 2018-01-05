@@ -75,10 +75,7 @@ void GeneticTSP::geneticAlgorithm()
                 }
                 std::cout << "-------Before cross end-------------\n";
 
-                auto childs = crossoverOnePoint(survivors);
-
-                newPopulation.push_back(childs.first);
-                newPopulation.push_back(childs.second);
+                newPopulation.push_back(crossoverPMX(survivors));
 
                 for(auto elem : newPopulation)
                 {
@@ -105,41 +102,76 @@ void GeneticTSP::geneticAlgorithm()
     std::cout << "Best solution: " << population.begin()->distance << "\n";
 }
 
-std::pair<Solution, Solution> GeneticTSP::crossoverOnePoint(const std::vector<Solution>& solutions) const
+Solution GeneticTSP::crossoverPMX(const std::vector<Solution>& solutions) const
 {
     RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
-    RandomIntGenerator randomCityGenerator(1, distances.size()-1);
+    RandomIntGenerator randomCityGenerator(2, distances.size()-2);
     auto solutionPosIncrement1 = randomSolutionGenerator();
     auto solutionPosIncrement2 = randomSolutionGenerator();
-    auto splitPoint = randomCityGenerator();
+    auto city1 = randomCityGenerator();
+    auto city2 = randomCityGenerator();
 
-    auto solutionToCrossover1 = solutions[solutionPosIncrement1]; 
-    auto solutionToCrossover2 = solutions[solutionPosIncrement2]; 
+    while(city1 == city2)
+    {
+        city1 = randomCityGenerator();
+        city2 = randomCityGenerator();
+    }
 
-    std::vector<int> child1;
-    std::vector<int> child2;
+    if(city1 > city2)
+    {
+        std::swap(city1, city2);
+    }
 
-    auto splitPointFromEnd = solutionToCrossover1.path.size() - splitPoint;  
+    std::cout << "city1/city2: " << city1 << "/" << city2 << "\n";
 
-    std::copy(solutionToCrossover1.path.begin(), solutionToCrossover1.path.end() - splitPointFromEnd, std::back_inserter(child1));
-    std::copy(solutionToCrossover2.path.begin() + splitPoint, solutionToCrossover2.path.end(), std::back_inserter(child1));
+    auto parent1 = solutions[solutionPosIncrement1];
+    auto parent2 = solutions[solutionPosIncrement2];
+    auto child = parent2;
 
-    std::copy(solutionToCrossover2.path.begin(), solutionToCrossover2.path.end() - splitPointFromEnd, std::back_inserter(child2));
-    std::copy(solutionToCrossover1.path.begin() + splitPoint, solutionToCrossover1.path.end(), std::back_inserter(child2));
+    std::vector<int> usedCities;
+    std::copy(parent2.path.begin() + city1, parent2.path.begin() + city2 + 1, std::back_inserter(usedCities));
 
-    std::cout << "Split front/end: " << splitPoint << "/" << splitPointFromEnd << "\n";
-    std::cout << "Split city sol1 front/end: " << *(solutionToCrossover1.path.begin() + splitPoint) << "/" << *(solutionToCrossover1.path.end() - splitPointFromEnd) << "\n";
-    std::cout << "Split city sol2 front/end: " << *(solutionToCrossover2.path.begin() + splitPoint) << "/" << *(solutionToCrossover2.path.end() - splitPointFromEnd) << "\n";
+    std::vector<std::pair<int, int>> mappedCityPairs;
 
-    auto childDistance1 = calculatePathDistance(child1);
-    auto childDistance2 = calculatePathDistance(child2);
+    for(auto parentPos1 = parent1.path.begin()+city1, parentPos2 = parent2.path.begin()+city1; parentPos1 != parent1.path.begin()+city2+1; ++parentPos1, ++parentPos2)
+    {
+        mappedCityPairs.push_back(std::make_pair(*parentPos1, *parentPos2));
+    }
 
-    solutionToCrossover1.path = std::move(child1);
-    solutionToCrossover1.distance = childDistance1;
-    solutionToCrossover2.path = std::move(child2);
-    solutionToCrossover2.distance = childDistance2;
+    auto loopCount = 0;
 
-    return std::make_pair(solutionToCrossover1, solutionToCrossover2);
+    for(auto parentPos = parent1.path.begin(), childPos = child.path.begin(); parentPos != parent1.path.end(); ++parentPos, ++childPos, ++loopCount)
+    {
+        if(std::find(usedCities.begin(), usedCities.end(), *parentPos) == usedCities.end())
+        {
+            *childPos = *parentPos;
+            continue;
+        }
+        else
+        {
+            auto mappedPairPos = std::find_if(mappedCityPairs.begin(), mappedCityPairs.end(), [&](auto elem)
+                                                                                            {
+                                                                                                return elem.second == *parentPos;
+                                                                                            });
+
+            if(mappedPairPos == mappedCityPairs.end())
+            {
+                if(loopCount >= city1 and loopCount <= city2)
+                {
+                    continue;
+                }
+            }
+            else if(std::find(usedCities.begin(), usedCities.end(), mappedPairPos->first) == usedCities.end())
+            {
+                *childPos = mappedPairPos->first;
+                continue;
+            }
+        }
+        
+        //*childPos = 0;
+    }
+
+    return child;
 }
 
 Solution GeneticTSP::mutateTransposition(const std::vector<Solution>& solutions) const

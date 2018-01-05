@@ -35,7 +35,7 @@ private:
     int calculatePathDistance(const std::vector<int>& path) const;
     Solution mutateTransposition(const std::vector<Solution>& solutions) const;
     Solution mutateInversion(const std::vector<Solution>& solutions) const;
-    std::pair<Solution, Solution> crossoverOnePoint(const std::vector<Solution>& solutions) const;
+    Solution crossoverPMX(const std::vector<Solution>& solutions) const;
 
     double calculationTime;
     int populationSize;
