@@ -65,34 +65,12 @@ void GeneticTSP::geneticAlgorithm()
 
             if(crossoverRandomRate < crossoverRate)
             {
-                std::cout << "-------SURVIVORS-------------\n";
-                for(auto elem : survivors)
-                {
-                    for(auto e : elem.path)
-                    {
-                        std::cout << e << " ";
-                    }
-                    std::cout << "\n";
-                }
-
                 auto children = crossoverOX(survivors);
 
                 newPopulation.push_back(children.first);
                 newPopulation.push_back(children.second);
-
-                std::cout << "--------NEW POPULATION------------\n";
-                for(auto elem : newPopulation)
-                {
-                    for(auto e : elem.path)
-                    {
-                        std::cout << e << " ";
-                    }
-                    std::cout << "\n";
-                }
             }
         }
-
-        std::cout << "End while loop\n";
 
         std::sort(newPopulation.begin(), newPopulation.end());
         population = newPopulation;
