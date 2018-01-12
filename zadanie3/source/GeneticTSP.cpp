@@ -161,6 +161,11 @@ std::pair<Solution, Solution> GeneticTSP::crossoverOX(const std::vector<Solution
         if(i == city1) 
         {
             i = city2 + 1;
+
+            if(i >= child1.path.size() - 1)
+            {
+                continue;
+            }
         }
 
         child1.path[i] = availableCities[j];
@@ -198,6 +203,11 @@ std::pair<Solution, Solution> GeneticTSP::crossoverOX(const std::vector<Solution
         if(i == city1) 
         {
             i = city2 + 1;
+
+            if(i >= child1.path.size() - 1)
+            {
+                continue;
+            }
         }
 
         child2.path[i] = availableCities[j];
