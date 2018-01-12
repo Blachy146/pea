@@ -65,6 +65,7 @@ void GeneticTSP::geneticAlgorithm()
 
             if(crossoverRandomRate < crossoverRate)
             {
+                std::cout << "-------SURVIVORS-------------\n";
                 for(auto elem : survivors)
                 {
                     for(auto e : elem.path)
@@ -73,10 +74,13 @@ void GeneticTSP::geneticAlgorithm()
                     }
                     std::cout << "\n";
                 }
-                std::cout << "-------Before cross end-------------\n";
 
-                newPopulation.push_back(crossoverPMX(survivors));
+                auto children = crossoverOX(survivors);
 
+                newPopulation.push_back(children.first);
+                newPopulation.push_back(children.second);
+
+                std::cout << "--------NEW POPULATION------------\n";
                 for(auto elem : newPopulation)
                 {
                     for(auto e : elem.path)
@@ -85,7 +89,6 @@ void GeneticTSP::geneticAlgorithm()
                     }
                     std::cout << "\n";
                 }
-                std::cout << "--------After cross end------------\n";
             }
         }
 
@@ -100,6 +103,109 @@ void GeneticTSP::geneticAlgorithm()
     }
 
     std::cout << "Best solution: " << population.begin()->distance << "\n";
+}
+
+std::pair<Solution, Solution> GeneticTSP::crossoverOX(const std::vector<Solution>& solutions) const
+{
+    RandomIntGenerator randomSolutionGenerator(0, solutions.size()-1);
+    RandomIntGenerator randomCityGenerator(1, solutions[0].path.size()-2);
+    auto solutionPosIncrement1 = randomSolutionGenerator();
+    auto solutionPosIncrement2 = randomSolutionGenerator();
+    auto city1 = randomCityGenerator();
+    auto city2 = randomCityGenerator();
+
+    while(solutionPosIncrement1 == solutionPosIncrement2)
+    {
+        solutionPosIncrement1 = randomSolutionGenerator();
+        solutionPosIncrement2 = randomSolutionGenerator();
+    }
+
+    while(city1 == city2)
+    {
+        city1 = randomCityGenerator();
+        city2 = randomCityGenerator();
+    }
+
+    if(city1 > city2)
+    {
+        std::swap(city1, city2);
+    }
+
+    auto parent1 = solutions[solutionPosIncrement1];
+    auto parent2 = solutions[solutionPosIncrement2];
+    auto child1 = parent2;
+
+    std::vector<int> usedCities;
+    std::vector<int> availableCities;
+
+    for(auto i = city1; i <= city2; ++i)
+    {
+        usedCities.push_back(child1.path[i]);
+    }
+
+    for(auto i = 1, j = city1 + 1; i < child1.path.size() - 1; ++i, ++j)
+    {
+        if(j == child1.path.size() - 1)
+        {
+            j = 1;
+        }
+
+        if(std::find(usedCities.begin(), usedCities.end(), parent1.path[j]) == usedCities.end())
+        {
+            availableCities.push_back(parent1.path[j]);
+        }
+    }
+
+    for(auto i = 1, j = 0; i < child1.path.size() - 1; ++i, ++j)
+    {
+        if(i == city1) 
+        {
+            i = city2 + 1;
+        }
+
+        child1.path[i] = availableCities[j];
+    }
+
+    child1.distance = calculatePathDistance(child1.path);
+
+    parent1 = solutions[solutionPosIncrement2];
+    parent2 = solutions[solutionPosIncrement1];
+    auto child2 = parent2;
+
+    usedCities = {};
+    availableCities = {};
+
+    for(auto i = city1; i <= city2; ++i)
+    {
+        usedCities.push_back(child2.path[i]);
+    }
+
+    for(auto i = 1, j = city1 + 1; i < child2.path.size() - 1; ++i, ++j)
+    {
+        if(j == child2.path.size() - 1)
+        {
+            j = 1;
+        }
+
+        if(std::find(usedCities.begin(), usedCities.end(), parent1.path[j]) == usedCities.end())
+        {
+            availableCities.push_back(parent1.path[j]);
+        }
+    }
+
+    for(auto i = 1, j = 0; i < child2.path.size() - 1; ++i, ++j)
+    {
+        if(i == city1) 
+        {
+            i = city2 + 1;
+        }
+
+        child2.path[i] = availableCities[j];
+    }
+
+    child2.distance = calculatePathDistance(child2.path);
+
+    return std::make_pair(child1, child2);
 }
 
 Solution GeneticTSP::crossoverPMX(const std::vector<Solution>& solutions) const
@@ -126,10 +232,17 @@ Solution GeneticTSP::crossoverPMX(const std::vector<Solution>& solutions) const
 
     auto parent1 = solutions[solutionPosIncrement1];
     auto parent2 = solutions[solutionPosIncrement2];
-    auto child = parent2;
+    auto child1 = parent2;
 
     std::vector<int> usedCities;
     std::copy(parent2.path.begin() + city1, parent2.path.begin() + city2 + 1, std::back_inserter(usedCities));
+
+    std::cout << "-------USED CITIES-------\n";
+    for(auto elem : usedCities)
+    {
+        std::cout << elem << " ";
+    }
+    std::cout << "\n";
 
     std::vector<std::pair<int, int>> mappedCityPairs;
 
@@ -138,9 +251,16 @@ Solution GeneticTSP::crossoverPMX(const std::vector<Solution>& solutions) const
         mappedCityPairs.push_back(std::make_pair(*parentPos1, *parentPos2));
     }
 
+    std::cout << "-------MAPED CITIES PAIRS-------\n";
+    for(auto elem : mappedCityPairs)
+    {
+        std::cout << elem.first << "-" << elem.second << ", ";
+    }
+    std::cout << "\n";
+
     auto loopCount = 0;
 
-    for(auto parentPos = parent1.path.begin(), childPos = child.path.begin(); parentPos != parent1.path.end(); ++parentPos, ++childPos, ++loopCount)
+    for(auto parentPos = parent1.path.begin(), childPos = child1.path.begin(); parentPos != parent1.path.end(); ++parentPos, ++childPos, ++loopCount)
     {
         if(std::find(usedCities.begin(), usedCities.end(), *parentPos) == usedCities.end())
         {
@@ -171,7 +291,7 @@ Solution GeneticTSP::crossoverPMX(const std::vector<Solution>& solutions) const
         //*childPos = 0;
     }
 
-    return child;
+    return child1;
 }
 
 Solution GeneticTSP::mutateTransposition(const std::vector<Solution>& solutions) const

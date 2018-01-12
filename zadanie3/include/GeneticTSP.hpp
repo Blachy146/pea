@@ -36,6 +36,7 @@ private:
     Solution mutateTransposition(const std::vector<Solution>& solutions) const;
     Solution mutateInversion(const std::vector<Solution>& solutions) const;
     Solution crossoverPMX(const std::vector<Solution>& solutions) const;
+    std::pair<Solution, Solution> crossoverOX(const std::vector<Solution>& solutions) const;
 
     double calculationTime;
     int populationSize;
