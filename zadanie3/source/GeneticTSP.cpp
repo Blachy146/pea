@@ -17,7 +17,7 @@ GeneticTSP::GeneticTSP()
 {
 }
 
-void GeneticTSP::geneticAlgorithm()
+int GeneticTSP::geneticAlgorithm()
 {
     auto startPopulation = generateRandomPopulation(populationSize);
     auto numberOfSurvivors = static_cast<int>(populationSize * survivalRate);
@@ -79,8 +79,21 @@ void GeneticTSP::geneticAlgorithm()
         auto duration = std::chrono::duration<double, std::ratio<1,1>>(endTimePoint - startTimePoint);
         time -= duration.count();
     }
+/*
+    std::cout << "Population size: " << this->populationSize << "\n";
+    std::cout << "Calculation time: " << this->calculationTime << "\n";
+    std::cout << "Mutation rate: " << this->mutationRate << "\n";
+    std::cout << "Crossover rate: " << this->crossoverRate << "\n";
+    std::cout << "Survival rate: " << this->survivalRate << "\n";
+
+    if(this->mutationType == MutationType::Inversion) 
+        std::cout << "Mutation type: Inversion\n";
+    else
+        std::cout << "Mutation type: Transposition\n";
 
     std::cout << "Best solution: " << population.begin()->distance << "\n";
+*/
+    return population.begin()->distance;
 }
 
 std::pair<Solution, Solution> GeneticTSP::crossoverOX(const std::vector<Solution>& solutions) const

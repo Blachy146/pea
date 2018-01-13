@@ -8,7 +8,7 @@ void printMenu()
     std::cout << "------------MENU------------\n";
     std::cout << "1. Wczytaj plik\n";
     std::cout << "2. Ustaw rozmiar populacji\n";
-    std::cout << "3. Ustaw rodzaj muracji\n";
+    std::cout << "3. Ustaw rodzaj mutacji\n";
     std::cout << "4. Ustaw czas dzialania\n";
     std::cout << "5. Ustaw odsetek mutacji\n";
     std::cout << "6. Ustaw odsetek krzyzowan\n";
@@ -44,7 +44,6 @@ std::string getFileName()
     return file;
 }
 
-/*
 void makeMeasurments()
 {
     auto genetic = std::make_unique<GeneticTSP>(); 
@@ -57,28 +56,46 @@ void makeMeasurments()
     std::vector<int> symResults {107217};
     std::vector<int> asymSizes {170}; 
     std::vector<int> symSizes {439};
-    std::vector<double> executeTimes = {0.001, 0.01, 0.1, 1.0, 10.0, 20.0, 40.0, 60.0};
+    std::vector<double> executeTimes {1.0, 10.0, 20.0, 40.0, 60.0};
+    std::vector<int> populationSizes {20, 40, 120, 300};
+    std::vector<double> survivalRates {0.1, 0.2, 0.3, 0.4, 0.5};
+    std::vector<int> mutationTypes {1, 2};
+    double mutationRate = 0.01;
+    double crossoverRate = 0.8;
 
-    for(auto i = 0; i < dataFileAsym.size(); ++i)
+    genetic->tryToLoadFromFile(dataFileAsym[0]);
+    genetic->setMutationRate(mutationRate);
+    genetic->setCrossoverRate(crossoverRate);
+
+    std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Population size" << ";" << "Mutation type" << ";" << "Mutation rate" << ";" << "Crossover rate" << ";" << "Survival rate" << ";" << "\n";
+
+    for(auto time : executeTimes)
     {
-        genetic->tryToLoadFromFile(dataFileAsym[i]);
+        genetic->setCalculationTime(time);
 
-        for(auto time : executeTimes)
+        for(auto populationSize : populationSizes)
         {
-            genetic->setExecuteTime(time);
+            genetic->setPupulationSize(populationSize);
 
-            for(auto divers : falseTrue)
+            for(auto survivalRate : survivalRates)
             {
-                genetic->setDiversification(divers);
+                genetic->setSurvivalRate(survivalRate);
 
-                auto result = genetic->tabuSearch();
-                double percentage = ((result - asymResults[i]) / (double)asymResults[i]) * 100.0;
-                std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Diversification" << ";" << "\n";
-                std::cout << asymSizes[i] << ";" << time << ";" << percentage << ";" << divers << ";" << "\n"; 
+                for(auto mutationType : mutationTypes)
+                {
+                    if(mutationType == 1)
+                        genetic->setMutationType(MutationType::Inversion);
+                    else
+                        genetic->setMutationType(MutationType::Transposition);
+
+                    auto result = genetic->geneticAlgorithm();
+                    double percentage = ((result - asymResults[0]) / (double)asymResults[0]) * 100.0;
+                    std::cout << asymSizes[0] << ";" << time << ";" << percentage << ";" << populationSize << ";" << mutationType << ";" << mutationRate << ";" << crossoverRate << ";" << survivalRate << ";" << "\n"; 
+                }
             }
         }
     }
-
+/*
     genetic = std::make_unique<GeneticTSP>(); 
 
     for(auto i = 0; i < dataFileSym.size(); ++i)
@@ -103,11 +120,12 @@ void makeMeasurments()
             }
         }
     }
+    */
 }
-*/
 
 int main()
 {
+    /*
     bool endProgram = false;
     auto genetic = std::make_unique<GeneticTSP>(); 
 
@@ -183,7 +201,7 @@ int main()
         }
         case 9:
         {
-            //makeMeasurments();
+            makeMeasurments();
             endProgram = true;
             break;
         }
@@ -194,20 +212,7 @@ int main()
             break;
         }
     }
-}
+    */
 
-/*
-int main()
-{
-    auto genetic = std::make_unique<GeneticTSP>();
-
-    genetic->tryToLoadFromFile("/home/bmalecki/Downloads/pr152.tsp/data");
-    genetic->setPupulationSize(20);
-    genetic->setMutationRate(0.31);
-    genetic->setCrossoverRate(0.9);
-    genetic->setSurvivalRate(0.2);
-    genetic->setCalculationTime(60.0);
-    genetic->setMutationType(MutationType::Inversion);
-    genetic->geneticAlgorithm();
+    makeMeasurments();
 }
-*/
