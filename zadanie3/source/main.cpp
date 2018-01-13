@@ -8,11 +8,12 @@ int main()
 {
     auto genetic = std::make_unique<GeneticTSP>();
 
-    genetic->tryToLoadFromFile("/home/bmalecki/Downloads/gr17.tsp/data");
-    genetic->setPupulationSize(100);
-    genetic->setMutationRate(0.01);
-    genetic->setCrossoverRate(0.8);
-    genetic->setSurvivalRate(0.4);
-    genetic->setCalculationTime(10.0);
+    genetic->tryToLoadFromFile("/home/bmalecki/Downloads/pr152.tsp/data");
+    genetic->setPupulationSize(20);
+    genetic->setMutationRate(0.31);
+    genetic->setCrossoverRate(0.9);
+    genetic->setSurvivalRate(0.2);
+    genetic->setCalculationTime(60.0);
+    genetic->setMutationType(MutationType::Inversion);
     genetic->geneticAlgorithm();
 }
