@@ -79,7 +79,7 @@ int GeneticTSP::geneticAlgorithm()
         auto duration = std::chrono::duration<double, std::ratio<1,1>>(endTimePoint - startTimePoint);
         time -= duration.count();
     }
-/*
+
     std::cout << "Population size: " << this->populationSize << "\n";
     std::cout << "Calculation time: " << this->calculationTime << "\n";
     std::cout << "Mutation rate: " << this->mutationRate << "\n";
@@ -92,7 +92,7 @@ int GeneticTSP::geneticAlgorithm()
         std::cout << "Mutation type: Transposition\n";
 
     std::cout << "Best solution: " << population.begin()->distance << "\n";
-*/
+
     return population.begin()->distance;
 }
 

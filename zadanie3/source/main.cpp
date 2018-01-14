@@ -48,84 +48,107 @@ void makeMeasurments()
 {
     auto genetic = std::make_unique<GeneticTSP>(); 
 
-    std::vector<std::string> dataFileAsym {"/home/bmalecki/Downloads/ftv170.atsp/data"};
+    std::vector<std::string> dataFileAsym {"/home/bmalecki/Downloads/br17.atsp/data",
+                                           "/home/bmalecki/Downloads/ftv170.atsp/data",
+                                           "/home/bmalecki/Downloads/rbg403.atsp/data"};
 
-    std::vector<std::string> dataFileSym {"/home/bmalecki/Downloads/pr439.tsp/data"};
+    std::vector<std::string> dataFileSym {"/home/bmalecki/Downloads/gr17.tsp/data",
+                                          "/home/bmalecki/Downloads/pr439.tsp/data",
+                                          "/home/bmalecki/Downloads/pr1002.tsp/data"};
 
-    std::vector<int> asymResults {2755}; 
-    std::vector<int> symResults {107217};
-    std::vector<int> asymSizes {170}; 
-    std::vector<int> symSizes {439};
+    std::vector<int> asymResults {39, 2755, 2465}; 
+    std::vector<int> symResults {2085, 107217, 259045};
+    std::vector<int> asymSizes {17, 170, 403}; 
+    std::vector<int> symSizes {17, 439, 1002};
     std::vector<double> executeTimes {1.0, 10.0, 20.0, 40.0, 60.0};
-    std::vector<int> populationSizes {20, 40, 120, 300};
-    std::vector<double> survivalRates {0.1, 0.2, 0.3, 0.4, 0.5};
+    std::vector<double> populationSizesMul {0.5, 1, 2};
+    std::vector<double> survivalRates {0.25};
     std::vector<int> mutationTypes {1, 2};
     double mutationRate = 0.01;
     double crossoverRate = 0.8;
 
-    genetic->tryToLoadFromFile(dataFileAsym[0]);
     genetic->setMutationRate(mutationRate);
     genetic->setCrossoverRate(crossoverRate);
 
     std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Population size" << ";" << "Mutation type" << ";" << "Mutation rate" << ";" << "Crossover rate" << ";" << "Survival rate" << ";" << "\n";
 
-    for(auto time : executeTimes)
+    for(auto i = 0; i < dataFileAsym.size(); ++i)
     {
-        genetic->setCalculationTime(time);
+        genetic->tryToLoadFromFile(dataFileAsym[i]);
 
-        for(auto populationSize : populationSizes)
+        for(auto time : executeTimes)
         {
-            genetic->setPupulationSize(populationSize);
+            genetic->setCalculationTime(time);
 
-            for(auto survivalRate : survivalRates)
+            for(auto populationSizeMul : populationSizesMul)
             {
-                genetic->setSurvivalRate(survivalRate);
+                auto populationSize = static_cast<int>(populationSizeMul * asymSizes[i]);
+                if(populationSize % 2 != 0) ++populationSize;
+                genetic->setPupulationSize(populationSize);
 
-                for(auto mutationType : mutationTypes)
+                for(auto survivalRate : survivalRates)
                 {
-                    if(mutationType == 1)
-                        genetic->setMutationType(MutationType::Inversion);
-                    else
-                        genetic->setMutationType(MutationType::Transposition);
+                    genetic->setSurvivalRate(survivalRate);
 
-                    auto result = genetic->geneticAlgorithm();
-                    double percentage = ((result - asymResults[0]) / (double)asymResults[0]) * 100.0;
-                    std::cout << asymSizes[0] << ";" << time << ";" << percentage << ";" << populationSize << ";" << mutationType << ";" << mutationRate << ";" << crossoverRate << ";" << survivalRate << ";" << "\n"; 
+                    for(auto mutationType : mutationTypes)
+                    {
+                        if(mutationType == 1)
+                            genetic->setMutationType(MutationType::Inversion);
+                        else
+                            genetic->setMutationType(MutationType::Transposition);
+
+                        auto result = genetic->geneticAlgorithm();
+                        double percentage = ((result - asymResults[i]) / (double)asymResults[i]) * 100.0;
+                        std::cout << asymSizes[i] << ";" << time << ";" << percentage << ";" << populationSize << ";" << mutationType << ";" << mutationRate << ";" << crossoverRate << ";" << survivalRate << ";" << "\n"; 
+                    }
                 }
             }
         }
     }
-/*
+
     genetic = std::make_unique<GeneticTSP>(); 
+    genetic->setMutationRate(mutationRate);
+    genetic->setCrossoverRate(crossoverRate);
+
+    std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Population size" << ";" << "Mutation type" << ";" << "Mutation rate" << ";" << "Crossover rate" << ";" << "Survival rate" << ";" << "\n";
 
     for(auto i = 0; i < dataFileSym.size(); ++i)
     {
         genetic->tryToLoadFromFile(dataFileSym[i]);
-        genetic->setDiversificationMaxCount(symSizes[i]*8);
-        genetic->setTabuTenure((int)(symSizes[i]*3));
-        genetic->setTabuSize((int)(symSizes[i]*3));
 
         for(auto time : executeTimes)
         {
-            genetic->setExecuteTime(time);
+            genetic->setCalculationTime(time);
 
-            for(auto divers : falseTrue)
+            for(auto populationSizeMul : populationSizesMul)
             {
-                genetic->setDiversification(divers);
+                auto populationSize = static_cast<int>(populationSizeMul * symSizes[i]);
+                if(populationSize % 2 != 0) ++populationSize;
+                genetic->setPupulationSize(populationSize);
 
-                auto result = genetic->tabuSearch();
-                double percentage = ((result - symResults[i]) / (double)symResults[i]) * 100.0;
-                std::cout << "Number of cities" << ";" << "Time" << ";" << "Error" << ";" << "Diversification" << ";" << "\n";
-                std::cout << symSizes[i] << ";" << time << ";" << percentage << ";" << divers << ";" << "\n"; 
+                for(auto survivalRate : survivalRates)
+                {
+                    genetic->setSurvivalRate(survivalRate);
+
+                    for(auto mutationType : mutationTypes)
+                    {
+                        if(mutationType == 1)
+                            genetic->setMutationType(MutationType::Inversion);
+                        else
+                            genetic->setMutationType(MutationType::Transposition);
+
+                        auto result = genetic->geneticAlgorithm();
+                        double percentage = ((result - symResults[i]) / (double)symResults[i]) * 100.0;
+                        std::cout << symSizes[i] << ";" << time << ";" << percentage << ";" << populationSize << ";" << mutationType << ";" << mutationRate << ";" << crossoverRate << ";" << survivalRate << ";" << "\n"; 
+                    }
+                }
             }
         }
     }
-    */
 }
 
 int main()
 {
-    /*
     bool endProgram = false;
     auto genetic = std::make_unique<GeneticTSP>(); 
 
@@ -212,7 +235,6 @@ int main()
             break;
         }
     }
-    */
 
-    makeMeasurments();
+    //makeMeasurments();
 }
